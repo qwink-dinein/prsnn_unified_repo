@@ -1,5 +1,5 @@
 import { chatOpen, chatThreads, mergeMessages, threadOf } from '@/domain/chat';
-import type { ChatMessage } from '@/domain/types';
+import type { ChatMessage, Duration } from '@/domain/types';
 
 const m = (id: string, at: string): ChatMessage => ({ _id: id, bookingId: 'b', senderId: 's', content: id, createdAt: at });
 
@@ -23,7 +23,7 @@ const bk = (id: string, o: Partial<{ status: string; paid: boolean; date: string
     paymentStatus: (o.paid === false ? 'pending' : 'paid') as 'paid',
     scheduledDate: o.date ?? '2026-11-21',
     startTime: o.start ?? '12:00',
-    duration: (o.dur ?? 60) as 60,
+    duration: String(o.dur ?? 60) as Duration,
     requesterId: o.req ?? 'u1',
     companionId: o.comp ?? 'c1',
   });

@@ -47,9 +47,11 @@ export function useChat(thread: { ids: string[]; sendTo: string | null; channel:
   const live = isLivePreview();
   const [messages, setMessages] = useState<ChatMessage[]>(() => (sample ? demoThread(bookingId, myId) : []));
   // A thread that gains or loses a booking starts from its own history again.
-  useEffect(() => {
+  const [shownKey, setShownKey] = useState(idsKey);
+  if (shownKey !== idsKey) {
+    setShownKey(idsKey);
     if (!sample) setMessages([]);
-  }, [idsKey, sample]);
+  }
   const [status, setStatus] = useState<Status>(sample ? 'open' : live ? 'closed' : 'connecting');
   const [error, setError] = useState<string | null>(live ? 'Chats are private, so they aren’t shown in a preview.' : null);
   // "Typing…": a Realtime broadcast on the same channel (nothing is stored). Hidden after 4 s of
