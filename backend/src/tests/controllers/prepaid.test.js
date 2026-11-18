@@ -43,7 +43,7 @@ describe('POST /bookings/prepaid', () => {
     expect(out.booking).toMatchObject({ flow: 'prepaid', preferredCompanionId: 'c1', allocation: { state: 'awaiting_payment' }, paymentStatus: 'pending', packagePrice: 699, pricePerHour: 399 });
     expect(out.quote).toMatchObject({ currency: 'INR', amount: 699, fees: 0, hours: 2, effectiveHourly: 350 });
     expect(out.policy.cancellation[0]).toMatch(/85% refunded/);
-    expect(out.policy.support).toBe('mukarramjahmm@gmail.com');
+    expect(out.policy.support).toBe('admin@prsnn.com');
   });
 
   it('only durations the companion offers, inside 07:00–22:00', async () => {

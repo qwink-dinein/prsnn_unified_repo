@@ -54,7 +54,7 @@ const POLICY: Policy = {
     'Companion no-show: full refund after review. Your own no-show: no refund.',
   ],
   refunds: 'Refunds go to your original payment method. Timing depends on your bank or UPI app.',
-  support: 'mukarramjahmm@gmail.com',
+  support: 'admin@prsnn.com',
 };
 
 const viewer = () => useSession.getState().user;

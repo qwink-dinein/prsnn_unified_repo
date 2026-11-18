@@ -112,7 +112,7 @@ Acceptance criteria (all covered by backend tests):
 - A failed allocation triggers a full refund, claimed once and retried on provider errors.
 - Customers see booking status and payment status separately (timeline + payment line).
 - Cancelling follows the table above. “Report a problem” works on any paid booking and
-  reaches support at mukarramjahmm@gmail.com.
+  reaches support at admin@prsnn.com.
 
 The website keeps its original request → accept → pay flow on the same backend, with the
 same package prices.

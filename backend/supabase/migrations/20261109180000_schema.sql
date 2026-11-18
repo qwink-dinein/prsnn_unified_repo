@@ -72,7 +72,7 @@ insert into public.settings (key, value) values ('pricing', jsonb_build_object(
 
 -- Server-only configuration (not readable by clients).
 create table private.config (key text primary key, value text not null);
-insert into private.config values ('payment_mode', 'simulated'), ('support_email', 'mukarramjahmm@gmail.com'), ('max_offers', '3');
+insert into private.config values ('payment_mode', 'simulated'), ('support_email', 'admin@prsnn.com'), ('max_offers', '3');
 -- Phones promoted to superadmin at login (10 digits). Owner adds them in the SQL editor:
 --   insert into private.superadmin_phones values ('98XXXXXXXX');
 create table private.superadmin_phones (phone text primary key check (phone ~ '^[6-9][0-9]{9}$'));

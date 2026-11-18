@@ -20,7 +20,7 @@ const hhmm12 = (t) => {
  * The terms shown before payment (app checkout) — kept here so the server is
  * the single source of truth and matches prsnn.com/refund-policy.
  */
-const SUPPORT = () => process.env.SUPPORT_EMAIL || 'mukarramjahmm@gmail.com';
+const SUPPORT = () => process.env.SUPPORT_EMAIL || 'admin@prsnn.com';
 const pct = (x) => `${Math.round(x * 100)}%`;
 
 const span = (min) => (min % 60 === 0 ? `${min / 60} ${min === 60 ? 'hour' : 'hours'}` : `${min} minutes`);
