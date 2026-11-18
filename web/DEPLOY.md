@@ -9,12 +9,11 @@ What's in the repo: `wrangler.jsonc` (serves `out/`, 404 page, trailing slashes)
 
 ## 1. Create the project (Cloudflare dashboard)
 
-1. Cloudflare → **Workers & Pages** → **Create** → **Import a repository** → GitHub → `web/`.
-2. **Production branch:** `claude/adoring-euler-w8jj3h` (set 2026-11-15). Not `main`: it still holds the old
-   9 November import, which fails to build ("Expected a non-empty string" from an empty image host).
+1. Cloudflare → **Workers & Pages** → **Create** → **Import a repository** → GitHub → `qwink-dinein/prsnn_unified_repo`.
+2. **Production branch:** `main` (since 18 Nov 2026 the website lives in `web/` of the one prsnn repo).
 3. **Build command:** `pnpm run build`
 4. **Deploy command:** `npx wrangler deploy`
-5. **Root directory:** `/` (leave empty)
+5. **Root directory:** `web`
 6. **Build variables** (Settings → Build → Variables and secrets):
 
 | Name | Value | Notes |

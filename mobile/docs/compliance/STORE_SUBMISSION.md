@@ -63,8 +63,8 @@ Encryption: `usesNonExemptEncryption: false` (HTTPS only).
 ## App Store · Age rating
 
 Mature/Suggestive themes: **None**. Unrestricted web access: **No**. User-generated content: **Yes, with moderation**
-(profiles and photos reviewed by staff; reporting in every booking; block via suspension). Choose **18+**
-(meets real people in person).
+(profiles and photos reviewed by staff; anyone can **report** or **block** another person from their profile or the chat
+("⋯"); reports reach staff in Admin → Reports; staff can suspend). Choose **18+** (meets real people in person).
 
 ## App review notes (both stores)
 
@@ -75,17 +75,47 @@ public meeting places (home visits only when a family books for a parent).
 
 Payments use Razorpay (an RBI-authorised payment aggregator). Bookings are for real-world, in-person
 services (platonic company), so In-App Purchase / Play Billing does not apply (App Store Guideline 3.1.3(e),
-Google Play Payments policy: physical goods and services). For review, Razorpay test mode can be on:
-use card 4111 1111 1111 1111, any future expiry, any CVV, OTP 1234 (or tell us and we switch to test mode).
+Google Play Payments policy: physical goods and services). Payments are live: you can browse, choose a
+companion, length, day and time and reach the payment screen without paying. If you do complete a payment,
+we refund it in full.
 
-Demo account (member): sign in with email, see the credentials in the review notes field.
-Demo account (companion): same, second set of credentials.
-The panic button alerts our staff only; in an emergency users are told to call 112.
-Account deletion: Profile → Delete account.
+Sign-in is by mobile number. Demo accounts use test numbers with fixed codes (no message is sent):
+  Member: +91 90000 00101, code in the "Sign-in information" field, then PIN 1234.
+  Companion: +91 90000 00102, code in the "Sign-in information" field, then PIN 1234.
+Safety: anyone can report or block another person from their profile or the chat (tap ⋯); reports go
+to our team (Admin → Reports). The panic button alerts our staff; users are told to call 112 in an emergency.
+Account deletion: Profile → Delete account (also https://prsnn.com/delete-account).
 ```
 
-Create two review accounts (member and companion) with the email sign-in, and type their
-passwords only into the store consoles, never into the repo.
+Create the two review accounts with test phone numbers (docs/GO_LIVE.md, Stage 3) and type their codes
+only into the store consoles, never into the repo.
+
+## Listing
+
+**Name:** prsnn · **Subtitle (Apple, 30):** Verified company, in public · **Category:** Lifestyle (Apple) / Social (Play)
+
+**Short description (Play, 80):** Book a verified companion for coffee, walks or events. Platonic, public, safe.
+
+**Promotional text (Apple, 170):** New in town or don't want to go alone? Book an ID-checked companion for an hour or a
+day: coffee, walks, events, study. Fixed prices, public places, a panic button in every session.
+
+**Full description:**
+```
+prsnn is good company, on your terms. Book a verified companion for the everyday plans you'd rather not do alone:
+a coffee, a walk, a concert, exploring a new city, studying together, or company for a parent.
+
+• Every companion is approved by our team and ID-checked before their first booking
+• Platonic only: not dating, not errands, not therapy. Public places only
+• Fixed, clear prices from ₹399 an hour. Pay securely with Razorpay; cancellation and refund rules shown before you pay
+• See who's free today, view profiles and photos, and book a length, day and time that suits you
+• Chat opens once a booking is confirmed; phone numbers stay hidden
+• Report or block anyone, and a panic button in every session that alerts our team
+• Want to earn? Become a companion and keep 80% of every booking
+
+For people 18 and over. Available across India.
+```
+
+**Keywords (Apple, 100):** companion,friend,company,meetup,new in town,walk,coffee,events,verified,india
 
 ## Screenshots
 
