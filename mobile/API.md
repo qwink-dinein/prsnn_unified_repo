@@ -582,3 +582,4 @@ Migration `20261118180000_companion_meets` (applied). Test: `backend/supabase/te
   with `update_my_profile { seeGender }` (Profile → Privacy, "I meet"). Existing companions were set to `everyone`.
 - Test prices (owner, 18 Nov): ₹10 / 19 / 28 / 37 … 109 for 1–12 h (₹10 + ₹9 per extra hour). While these are on,
   the e2e price checks (₹399 / ₹699) fail on purpose; restore 399 … 3599 in Admin → Prices before launch.
+  Restored to 399 … 3599 the same day, after testing.
