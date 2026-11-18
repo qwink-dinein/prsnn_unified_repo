@@ -15,7 +15,7 @@ export const APP_STORE_URL = process.env.NEXT_PUBLIC_APP_STORE_URL || '';
 export const PLAY_STORE_URL = process.env.NEXT_PUBLIC_PLAY_STORE_URL || '';
 /** Android app file (APK) to download directly until the Google Play listing is live. Update after each new build. */
 export const ANDROID_APK_URL = process.env.NEXT_PUBLIC_ANDROID_APK_URL || 'https://drive.google.com/file/d/1Sil5PPOlmbVIL8gSCacvM7tJdopW1hGp/view?usp=sharing';
-export const FOUNDER = 'Mukarram Jah';
+export const FOUNDER = 'Mukarram';
 /** prsnn is for the whole of India: companions sign up in their own city. */
 export const COUNTRY = 'India';
 

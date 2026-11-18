@@ -31,10 +31,10 @@ app stores, LinkedIn, press, directories and social bios:
 > with a parent who's alone. Companions are approved by the prsnn team and ID-checked before
 > their first booking. Prices are fixed from ₹399 for one hour to ₹3,599 for twelve hours, and
 > companions keep 80% of every booking. prsnn works across India and was founded by
-> **Mukarram Jah**.
+> **Mukarram**.
 
 Short form (bios, 160 characters): *prsnn: book a verified companion for platonic company in
-public places. From ₹399. Across India. Founded by Mukarram Jah.*
+public places. From ₹399. Across India. Founded by Mukarram.*
 
 Brand name rules: always lowercase **prsnn** (logo "prsnn."). Say "prsnn app" or "prsnn
 companions" so search engines don't read it as a typo of "person".
@@ -69,7 +69,7 @@ places" and "not a date" plainly, which also steers Google away from adult inten
 3. `/hyderabad`: city page (areas served, popular plans, local FAQs). Later `/bengaluru` etc.
    only when the city is live; never publish empty city pages.
 4. `/become-a-companion`: earnings table (80%), how approval and ID check work, FAQs.
-5. `/safety`, `/pricing`, `/about` (founder story in full, Mukarram Jah), `/faq`.
+5. `/safety`, `/pricing`, `/about` (founder story in full, Mukarram), `/faq`.
 6. `/rent-a-friend`: a frank explainer ("What renting a friend means on prsnn, and what it
    doesn't"), linking to the categories.
 7. Legal: `/terms`, `/privacy`, `/refunds`, `/guidelines` (written, on the design canvas).
@@ -108,9 +108,9 @@ Do these in order; each adds a trusted source repeating the facts in section 1.
    description, the website, support email, and photos.
 2. **App Store and Google Play listings** with the same description and keywords ("companion",
    "rent a friend", "plus one", "elderly companion"). App pages rank and AI tools read them.
-3. **LinkedIn**: a prsnn company page and Mukarram Jah's profile listing "Founder, prsnn" with
+3. **LinkedIn**: a prsnn company page and Mukarram's profile listing "Founder, prsnn" with
    the founder story. Add both URLs to `sameAs` in `schema.jsonld`.
-4. **Wikidata** item for prsnn (instance of: mobile app / company; founder: Mukarram Jah;
+4. **Wikidata** item for prsnn (instance of: mobile app / company; founder: Mukarram;
    country: India; official website). Wikidata feeds Google's Knowledge Graph and many AIs.
 5. **Crunchbase, Product Hunt, AngelList/Wellfound, YourStory/Inc42 startup profiles** with the
    same text.

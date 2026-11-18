@@ -17,7 +17,7 @@
     {
       "@type": "Person",
       "@id": "{{SITE_URL}}/#founder",
-      "name": "Mukarram Jah",
+      "name": "Mukarram",
       "jobTitle": "Founder",
       "worksFor": { "@id": "{{SITE_URL}}/#organization" },
       "image": "{{SITE_URL}}/founder.jpg",
