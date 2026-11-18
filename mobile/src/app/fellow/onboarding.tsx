@@ -21,9 +21,9 @@ import { IdLaterNotice } from '@/components/fellow/IdParts';
 import { ALL_HOURS, companionShareOf, priceFor } from '@/domain/pricing';
 import { formatINR } from '@/domain/booking';
 import { categoryTitle } from '@/domain/categories';
-import { defaultVisibility, GENDER_OPTIONS, VISIBILITY_COPY } from '@/domain/privacy';
+import { COMPANION_MEET_OPTIONS, defaultVisibility, GENDER_OPTIONS, VISIBILITY_COPY } from '@/domain/privacy';
 import { stateOf } from '@/domain/places';
-import type { Gender, Visibility } from '@/domain/types';
+import type { Gender, SeeGender, Visibility } from '@/domain/types';
 import { svc, qk } from '@/services';
 import { errorMessage, type UploadFile } from '@/lib/api';
 import { pickImage } from '@/lib/pickImage';
@@ -34,8 +34,8 @@ import { useConfirm } from '@/components/ui/confirm';
 import { goToLogin } from '@/lib/flow';
 import { usePhotoNudge } from '@/components/PhotoNudge';
 
-type Step = 'gender' | 'photo' | 'visibility' | 'where' | 'about' | 'offer' | 'durations' | 'availability' | 'finish';
-const STEPS: Step[] = ['gender', 'photo', 'visibility', 'where', 'about', 'offer', 'durations', 'availability', 'finish'];
+type Step = 'gender' | 'meet' | 'photo' | 'visibility' | 'where' | 'about' | 'offer' | 'durations' | 'availability' | 'finish';
+const STEPS: Step[] = ['gender', 'meet', 'photo', 'visibility', 'where', 'about', 'offer', 'durations', 'availability', 'finish'];
 const INTERESTS = ['Coffee', 'Walks', 'Food', 'Movies', 'Music', 'Books', 'Sports', 'Art', 'Shopping', 'Travel', 'Hindi', 'English', 'Telugu', 'Tamil', 'Kannada', 'Marathi', 'Bengali', 'Urdu'];
 
 /**
@@ -51,6 +51,7 @@ export default function CompanionOnboarding() {
   const qc = useQueryClient();
   const [d, setD, clearDraft, restored] = useDraft(`companion.${user?.id ?? 'new'}`, {
     gender: user?.gender as Gender | undefined,
+    see: user?.seeGender as SeeGender | undefined,
     visibility: user?.profileVisibility as Visibility | undefined,
     place: {
       state: user?.state ?? stateOf(user?.city) ?? '',
@@ -83,6 +84,7 @@ export default function CompanionOnboarding() {
   const [photo, setPhoto] = useState<UploadFile | null>(null);
   const answeredUpTo = firstUnanswered(STEPS, {
     gender: !!d.gender,
+    meet: !!d.see,
     photo: !!photo || (!!user?.profilePhoto && user.photoStatus !== 'changes_requested'),
     visibility: !!d.visibility,
     where: !!d.place.city && !!d.place.area,
@@ -133,6 +135,7 @@ export default function CompanionOnboarding() {
         state: d.place.state,
         area: d.place.area,
         gender: d.gender,
+        seeGender: d.see,
         profileVisibility: d.visibility,
         description: d.description.trim(),
         packages: d.packages,
@@ -161,6 +164,7 @@ export default function CompanionOnboarding() {
   // Approved copy (design.md "simple onboarding copy"): one short title, at most one short line.
   const titles: Record<Step, string> = {
     gender: 'I am',
+    meet: 'Who are you comfortable meeting?',
     photo: 'Add your photo',
     visibility: 'Who can see your photo?',
     where: 'Where are you based?',
@@ -171,6 +175,7 @@ export default function CompanionOnboarding() {
     finish: 'Almost done',
   };
   const subs: Partial<Record<Step, string>> = {
+    meet: 'Only these members can find and book you.',
     photo: 'Members see this first.',
     visibility: 'You can change this later.',
     where: 'You’ll get bookings near you.',
@@ -231,6 +236,23 @@ export default function CompanionOnboarding() {
                   next();
                 }}
               />
+            </>
+          ) : step === 'meet' ? (
+            <>
+              <Options
+                items={COMPANION_MEET_OPTIONS.map((m) => ({
+                  key: m.value,
+                  title: m.label,
+                  body: m.body,
+                  icon: 'users' as IconName,
+                }))}
+                selected={d.see}
+                onPick={(v) => {
+                  set({ see: v as SeeGender });
+                  next();
+                }}
+              />
+              <Notice tone="info" text="Members don’t see this choice. You can change it any time in Profile → Privacy." />
             </>
           ) : step === 'photo' ? (
             <>

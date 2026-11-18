@@ -35,13 +35,13 @@ function PrivacyForm({ p }: { p?: Profile }) {
   const [busy, setBusy] = useState(false);
 
   const save = async () => {
-    if (!identityComplete(identity, !isCompanion)) return setError('Choose each option and tick the box to agree to how your profile is shown.');
+    if (!identityComplete(identity)) return setError('Choose each option and tick the box to agree to how your profile is shown.');
     setBusy(true);
     setError(null);
     try {
       await svc.updateIdentity({
         gender: identity.gender,
-        seeGender: isCompanion ? undefined : identity.seeGender,
+        seeGender: identity.seeGender,
         // Only send visibility when it changed: a change needs fresh consent.
         ...(identity.visibility !== initialVis ? { profileVisibility: identity.visibility, visibilityConsent: identity.consent } : {}),
         city: place?.city,
@@ -74,7 +74,7 @@ function PrivacyForm({ p }: { p?: Profile }) {
     >
       <Header title="Privacy & preferences" />
       <View style={{ gap: space.xl, marginTop: space.sm }}>
-        <IdentityForm value={identity} onChange={setIdentity} showSee={!isCompanion} role={isCompanion ? 'companion' : 'member'} />
+        <IdentityForm value={identity} onChange={setIdentity} showSee role={isCompanion ? 'companion' : 'member'} />
         <View style={{ gap: space.lg }}>
           <CityPicker
             value={place}

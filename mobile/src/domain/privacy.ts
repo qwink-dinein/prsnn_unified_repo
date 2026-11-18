@@ -25,6 +25,21 @@ export const VISIBILITY_COPY: Record<Visibility, { title: string; body: string }
   locked: { title: 'Locked', body: 'Only people you’ve booked with' },
 };
 
+/** Companion sign-up and Privacy: who a companion is comfortable meeting (they can find and book them). */
+export const COMPANION_MEET_OPTIONS: { value: SeeGender; label: string; body?: string }[] = [
+  { value: 'woman', label: 'Women' },
+  { value: 'man', label: 'Men' },
+  { value: 'nonbinary', label: 'Non-binary people' },
+  { value: 'everyone', label: 'Everyone', body: 'More members can book you' },
+];
+
+/**
+ * Same rule as the server's private.meets: a companion with no choice, or "everyone", meets anyone;
+ * otherwise only members of that gender (a member whose gender isn't known doesn't fit).
+ */
+export const companionMeets = (companionSee: SeeGender | null | undefined, memberGender: Gender | null | undefined) =>
+  !companionSee || companionSee === 'everyone' || (!!memberGender && companionSee === memberGender);
+
 export const seeLabel = (s?: SeeGender | null) => SEE_OPTIONS.find((o) => o.value === s)?.label ?? 'Everyone';
 
 /**

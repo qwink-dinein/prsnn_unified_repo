@@ -4,7 +4,7 @@ import { Text } from './ui/Text';
 import { Icon } from './ui/Icon';
 import { Chip } from './ui/layout';
 import { usePhotoNudge } from './PhotoNudge';
-import { defaultVisibility, GENDER_OPTIONS, SEE_OPTIONS, VISIBILITY_COPY } from '@/domain/privacy';
+import { COMPANION_MEET_OPTIONS, defaultVisibility, GENDER_OPTIONS, SEE_OPTIONS, VISIBILITY_COPY } from '@/domain/privacy';
 import type { Gender, SeeGender, Visibility } from '@/domain/types';
 
 export interface IdentityValue {
@@ -41,12 +41,14 @@ export function IdentityForm({ value, onChange, showSee = true, role = 'member' 
 
       {showSee ? (
         <View style={{ gap: space.sm }}>
-          <Text variant="headline">Show me</Text>
+          <Text variant="headline">{role === 'companion' ? 'I meet' : 'Show me'}</Text>
           <Text variant="footnote" muted>
-            You’ll only see {role === 'companion' ? 'people' : 'companions'} of this gender. Change it any time in Profile.
+            {role === 'companion'
+              ? 'Only these members can find and book you. Bookings you’ve already accepted stay as they are.'
+              : 'You’ll only see companions of this gender. Change it any time in Profile.'}
           </Text>
           <View style={styles.wrap} accessibilityRole="radiogroup">
-            {SEE_OPTIONS.map((g) => (
+            {(role === 'companion' ? COMPANION_MEET_OPTIONS : SEE_OPTIONS).map((g) => (
               <Chip key={g.value} label={g.label} selected={value.seeGender === g.value} onPress={() => onChange({ ...value, seeGender: g.value })} />
             ))}
           </View>

@@ -568,3 +568,17 @@ Migrations `20261118160000_block_and_report` + `20261118161000_close_report_fix`
   Admin → Reports (open / closed, open the person or booking, close with a note); the staff notification opens Admin → Reports.
 - Test: `supabase/tests/round13-block-and-report.sql`; `__tests__/safety.test.ts`.
 
+
+## Round 25 (2026-11-18): companions choose who they meet
+
+Migration `20261118180000_companion_meets` (applied). Test: `backend/supabase/tests/round14-companion-meets.sql` (rolled back).
+
+- `profiles.see_gender` now also applies to companions: for a member it's "who I want to meet", for a companion
+  "who can find and book me". `private.meets(c, gender)`: no choice or `everyone` meets anyone; otherwise only that
+  gender (unknown gender fits only `everyone`). App mirror: `companionMeets` in `src/domain/privacy.ts`.
+- Applied in `list_companions`, `get_companion`, `private.eligible` (offers) and `create_prepaid_booking`. Logged-out
+  visitors browse as before. `create_prepaid_booking` also refuses a companion with a block either way.
+- Sign-up: `submit_companion_application` takes `seeGender` (step 2, "Who are you comfortable meeting?"). Change it
+  with `update_my_profile { seeGender }` (Profile → Privacy, "I meet"). Existing companions were set to `everyone`.
+- Test prices (owner, 18 Nov): ₹10 / 19 / 28 / 37 … 109 for 1–12 h (₹10 + ₹9 per extra hour). While these are on,
+  the e2e price checks (₹399 / ₹699) fail on purpose; restore 399 … 3599 in Admin → Prices before launch.

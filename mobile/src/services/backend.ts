@@ -69,6 +69,8 @@ export interface CompanionForm {
   days: Record<string, boolean>;
   state?: string;
   gender?: string;
+  /** Who can find and book them (members of this gender, or everyone). */
+  seeGender?: string;
   profileVisibility?: string;
   categories: string[];
   /** Null when a photo was already uploaded earlier in setup. */
@@ -401,6 +403,7 @@ export const backend = {
       p: {
         fullName: f.fullName, city: f.city, state: f.state, area: f.area, description: f.description, packages: f.packages,
         startTime: f.startTime, endTime: f.endTime, tags: f.tags, availability: f.days, gender: f.gender, categories: f.categories,
+        ...(f.seeGender ? { seeGender: f.seeGender } : {}),
         ...(f.profileVisibility ? { profileVisibility: f.profileVisibility, visibilityConsent: true } : {}),
         ...(photoPath ? { photoPath } : {}),
       },

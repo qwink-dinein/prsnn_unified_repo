@@ -62,13 +62,20 @@ const up = async (c, bucket, name) => { const p = `${await id(c)}/${name}-${Date
 const photo = await up(comp, 'avatars', 'profile'); ok(!photo.error, 'photo uploaded', photo);
 const bad = await comp.storage.from('avatars').upload(`${memId}/x.png`, img, { contentType: 'image/png' });
 ok(!!bad.error, 'cannot upload into someone else’s folder');
-r = await rpc(comp, 'submit_companion_application', { p: { fullName: 'Ananya Rao', gender: 'woman', profileVisibility: 'locked', visibilityConsent: true, city: 'Hyderabad', area: 'Gachibowli', description: 'Coffee and walks.', packages: [1, 2, 4], startTime: '09:00', endTime: '20:00', tags: ['Coffee'],
+r = await rpc(comp, 'submit_companion_application', { p: { fullName: 'Ananya Rao', gender: 'woman', seeGender: 'everyone', profileVisibility: 'locked', visibilityConsent: true, city: 'Hyderabad', area: 'Gachibowli', description: 'Coffee and walks.', packages: [1, 2, 4], startTime: '09:00', endTime: '20:00', tags: ['Coffee'],
   availability: { monday: true, tuesday: true, wednesday: true, thursday: true, friday: true, saturday: true, sunday: true }, photoPath: photo.p } });
 ok(r.data?.verification_status === 'id_required', 'no ID at sign-up: live, ID at first booking', r);
 r = await rpc(mem, 'list_companions');
 let card = r.data?.find((c) => c.id === compId);
 ok(card && card.idVerified === false && card.locked && card.fullName === 'Ananya' && !card.profilePhoto, 'listed as new (not ID-verified), locked: first name, no photo', card);
 { const { data } = await mem2.from('profiles').select('id'); ok(data?.length === 1, 'members read only their own profile row', data?.length); }
+
+console.log('3b. Companions choose who they meet (both choices must fit)');
+r = await rpc(comp, 'update_my_profile', { p: { seeGender: 'man' } }); ok(r.data?.seeGender === 'man' || !r.error, 'companion saves "I meet: Men"', r.error);
+r = await rpc(mem, 'list_companions'); ok(!r.data?.some((c) => c.id === compId), 'hidden from a woman member', r.error);
+ok(!!(await rpc(mem, 'get_companion', { cid: compId })).error, 'their profile doesn’t open for her');
+r = await rpc(comp, 'update_my_profile', { p: { seeGender: 'everyone' } });
+r = await rpc(mem, 'list_companions'); ok(r.data?.some((c) => c.id === compId), 'Everyone: listed again', r.error);
 
 console.log('4. First booking asks for the ID; staff reject → re-offered/refunded');
 const key = `e2e-${Date.now()}`;
