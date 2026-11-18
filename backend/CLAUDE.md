@@ -1,9 +1,8 @@
-# prsnn-backend — notes for Claude
+# prsnn backend (Supabase) — notes for Claude
 
-Part of prsnn (book verified companions in Hyderabad). Sibling repos:
-`qwink-dinein/prsnn-backend` (Express + MongoDB API), `qwink-dinein/prsnn-frontend`
-(Next.js web + admin), `qwink-dinein/prsnn-mobile` (Expo app; its PRD.md, design.md,
-Architecture.md and API.md describe the whole system).
+Part of the prsnn monorepo: `mobile/` (Expo app; its PRD.md, design.md, Architecture.md and API.md describe the whole
+system), `backend/` (Supabase migrations, tests, edge functions) and `web/` (Next.js site on Cloudflare). See the root
+`CLAUDE.md` for the working rules.
 
 ## graphify
 

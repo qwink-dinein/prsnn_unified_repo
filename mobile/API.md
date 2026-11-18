@@ -1,7 +1,7 @@
 # prsnn API (Supabase)
 
 Project `prsnn` · ref `mhovyhapzhxcmcuelbol` · Mumbai (`ap-south-1`).
-SQL and edge functions: `qwink-dinein/prsnn-backend/supabase` (migrations are the source of truth).
+SQL and edge functions: `backend/supabase` (migrations are the source of truth).
 Client: `src/services/backend.ts` via `src/lib/supabase.ts`. Types: `src/domain/types.ts`.
 
 Every call is `supabase.rpc(name, args)` to a **security-definer** function that checks
@@ -162,7 +162,7 @@ from listings, search and offers.
 
 ## Owner setup
 
-See `prsnn-backend/supabase/README.md` (phone provider, Send SMS hook, secrets, superadmin numbers, test numbers).
+See `backend/supabase/README.md` (phone provider, Send SMS hook, secrets, superadmin numbers, test numbers).
 
 
 ## Round 2 (2026-11-10)
@@ -223,7 +223,7 @@ member and one for the companion (push + `WAPLIFY_TPL_SESSION_REMINDER`). Sent o
 number and first-pressed time (12 variables, WHATSAPP_TEMPLATES.md #7); the staff push carries the
 same. Email sign-ups' `contactPhone` is used when there is no login number.
 
-Checks: `scripts/e2e-supabase.mjs` §9 and `prsnn-backend/supabase/tests/round3-notify.sql`
+Checks: `scripts/e2e-supabase.mjs` §9 and `backend/supabase/tests/round3-notify.sql`
 (one transaction, always rolled back).
 
 ## Round 4 (2026-11-15)
@@ -254,7 +254,7 @@ seconds without logging out.
 writes `app.preview` to the activity log. The preview itself runs on the app's sample data
 (`src/lib/preview.tsx`); nothing else reaches the server.
 
-Checks: `scripts/e2e-supabase.mjs` §10 and `prsnn-backend/supabase/tests/round4-acid.sql`
+Checks: `scripts/e2e-supabase.mjs` §10 and `backend/supabase/tests/round4-acid.sql`
 (rolled back).
 
 ## Round 5 (2026-11-16) · state-machine fixes
@@ -295,7 +295,7 @@ completed" shows only when `canComplete`. Sign-up restores the remembered step o
 answers load, never over a tap, and never past the first unanswered question (`firstUnanswered`).
 The companion dashboard shows "Paused by our team" when suspended.
 
-Checks: `scripts/e2e-supabase.mjs` §11, `prsnn-backend/supabase/tests/round5-states.sql`
+Checks: `scripts/e2e-supabase.mjs` §11, `backend/supabase/tests/round5-states.sql`
 (13 checks, rolled back; all pass) and `round4-acid.sql` (updated for claim tokens; all pass).
 
 ## Round 6 (2026-11-16) · website, interest list, home visits
@@ -413,7 +413,7 @@ Migration `20261116220000_full_refund_cancels.sql`.
 
 ## Round 13 (2026-11-16): production guards (no double bookings, payments, messages)
 Migrations `20261116230000_production_guards.sql`, `20261116231000_fk_indexes_admin.sql`; edge functions
-`payments`, `refunds`, `razorpay-webhook` redeployed. Test: `prsnn-backend/supabase/tests/round7-production-guards.sql`.
+`payments`, `refunds`, `razorpay-webhook` redeployed. Test: `backend/supabase/tests/round7-production-guards.sql`.
 - **No overlapping sessions, guaranteed by the database:** `bookings.slot` (generated time range) and the exclusion
   constraint `bookings_companion_no_overlap` (same companion, overlapping slot, accepted or in ID check). Every path
   (booking, offer, accept, admin reassign) already checks; this makes a race impossible.
@@ -428,7 +428,7 @@ Migrations `20261116230000_production_guards.sql`, `20261116231000_fk_indexes_ad
   create two messages (the repeat hits the primary key and counts as sent); the send button locks instantly.
 
 ## Round 14 (2026-11-17): admins are told when an account is deleted
-Migration `20261117060000_delete_notice.sql`. Test: `prsnn-backend/supabase/tests/round8-delete-notice.sql`.
+Migration `20261117060000_delete_notice.sql`. Test: `backend/supabase/tests/round8-delete-notice.sql`.
 - `private.delete_account` (used by `delete_my_account` and `admin_delete_user`) now notifies every admin, except the
   one who deleted it, in one line: name, role, city, mobile number, who deleted it and how long after signing up.
   Example: "Pankaj (companion, Delhi, +91 97850 72111) deleted his account himself, 50 min after signing up."
@@ -441,7 +441,7 @@ Migration `20261117060000_delete_notice.sql`. Test: `prsnn-backend/supabase/test
 
 ## Round 15 (2026-11-17): a deleted account's files are deleted too
 Migration `20261117070000_purge_deleted_files.sql`; edge function `purge-files` (new, `verify_jwt: false`).
-Test: `prsnn-backend/supabase/tests/round9-purge-files.sql`.
+Test: `backend/supabase/tests/round9-purge-files.sql`.
 - Matches the privacy policy: profile photos (`avatars`) are removed right after the account is deleted;
   ID documents and selfie (`verification`) too, unless the person is part of an open safety case (an unresolved
   panic alert or dispute on one of their bookings). Those are removed once the case closes.
@@ -479,7 +479,7 @@ Edge function `notify` v20.
 - Re-sent to the one companion affected today (2 bookings, both later the same day).
 
 ## Round 19 (2026-11-17): one chat per person; chat closes when the session ends
-Migration `20261117110000_chat_window.sql`. Test: `prsnn-backend/supabase/tests/round11-chat-window.sql`.
+Migration `20261117110000_chat_window.sql`. Test: `backend/supabase/tests/round11-chat-window.sql`.
 - New `public.chat_open(b)`: the caller is on booking `b`, it is accepted and paid, and `now() < upper(slot)`
   (the session's end). Policy "chat write" on `messages` now uses it, so a message can be sent from confirmation
   (paid + accepted, i.e. after the ID check when there is one) until the session ends, from any app version.

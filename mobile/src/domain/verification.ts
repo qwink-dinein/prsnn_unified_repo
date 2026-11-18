@@ -2,7 +2,7 @@ import type { IdType, VerificationStatus } from './types';
 
 /**
  * Companion ID check happens at the first booking, not at sign-up.
- * Mirrors prsnn-backend/supabase/migrations/20261110090100_id_at_first_booking.sql.
+ * Mirrors backend/supabase/migrations/20261110090100_id_at_first_booking.sql.
  */
 
 export const ID_TYPES: { type: IdType; label: string; sides: string; needsBack: boolean }[] = [

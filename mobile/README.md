@@ -6,8 +6,8 @@ Expo / React Native.
 
 | | |
 |---|---|
-| Backend | Supabase project `prsnn` (Mumbai); SQL + edge functions in [qwink-dinein/prsnn-backend](https://github.com/qwink-dinein/prsnn-backend) `supabase/` |
-| Web + admin | [qwink-dinein/prsnn-frontend](https://github.com/qwink-dinein/prsnn-frontend) (Next.js) |
+| Backend | Supabase project `prsnn` (Mumbai); SQL + edge functions in `backend/` in this repo `supabase/` |
+| Web + admin | `web/` in this repo (Next.js) |
 | Docs | [PRD](PRD.md) · [Design](design.md) · [Architecture](Architecture.md) · [API](API.md) · [Tasks](Tasks.md) · [Phases](Phases.md) |
 
 ## Run it

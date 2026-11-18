@@ -2,8 +2,8 @@
 // Uses the e2e test accounts (e2e-*@prsnn.test, email+password, created by SQL —
 // not phone users). The password is NOT in the repo:
 //   E2E_PASSWORD=… node scripts/e2e-supabase.mjs [image.png]
-// Reset the test accounts first: prsnn-backend/supabase/tests/e2e-reset.sql.
-// Delete these accounts before launch (prsnn-backend/supabase/README.md).
+// Reset the test accounts first: backend/supabase/tests/e2e-reset.sql.
+// Delete these accounts before launch (backend/supabase/README.md).
 import fs from 'fs';
 import { createClient } from '@supabase/supabase-js';
 const URL = 'https://mhovyhapzhxcmcuelbol.supabase.co';
@@ -169,7 +169,7 @@ console.log('9. Who is told what (WhatsApp: offer → companion only, confirmed 
   ok((await rpc(mem, 'claim_notifications')).error, 'members cannot read the delivery queue');
 }
 // The 5 AM reminder and the 12-field panic alert run as the database itself:
-// check them with prsnn-backend/supabase/tests/round3-notify.sql (always rolls back).
+// check them with backend/supabase/tests/round3-notify.sql (always rolls back).
 
 console.log('10. Live badges, chat read, staff preview log');
 r = await rpc(mem, 'unread_counts');
@@ -192,7 +192,7 @@ await rpc(mem, 'cancel_booking', { bid: bf });
 r = await rpc(sup, 'admin_suspend_user', { uid: compId, on_off: true, reason: 'e2e' }); ok(!r.error, 'companion suspended', r);
 r = await rpc(comp, 'accept_offer', { bid: bf }); ok(/isn’t live/.test(r.error ?? ''), 'a suspended companion cannot accept', r);
 r = await rpc(sup, 'admin_suspend_user', { uid: compId, on_off: false, reason: null }); ok(!r.error, 'companion restored', r);
-// Locks and the rest of the rules: prsnn-backend/supabase/tests/round5-states.sql (rolled back).
+// Locks and the rest of the rules: backend/supabase/tests/round5-states.sql (rolled back).
 
 console.log('12. Website interest list, home visits');
 r = await rpc(anon, 'submit_enquiry', { phone_number: '+919000000777', interest_choice: 'companion', src: 'e2e' }); ok(r.data?.ok === true, 'website visitor leaves a number (no login)', r);
@@ -204,7 +204,7 @@ ok((await rpc(mem, 'admin_signups', { lim: 10 })).error === 'Access denied', 'me
 r = await rpc(sup, 'admin_signups', { lim: 500 }); ok(Array.isArray(r.data?.items) && r.data.items.every((u) => ['user', 'companion'].includes(u.role) && Array.isArray(u.categories)) && r.data.counts.total >= r.data.items.length, 'staff see app sign-ups with what they chose', r.data?.counts);
 r = await rpc(mem, 'create_prepaid_booking', { p: { companionId: compId, scheduledDate: day(6), startTime: '11:00', duration: '60', idempotencyKey: key + 'hv1', acceptTerms: true, category: 'dont_go_alone', meetingPlace: 'My flat, Road 1', homeVisit: true } });
 ok(/only for Companion for a Loved One/.test(r.error ?? ''), 'home visit refused outside Loved One', r);
-// Address privacy for offered vs confirmed companions: prsnn-backend/supabase/tests (rolled back).
+// Address privacy for offered vs confirmed companions: backend/supabase/tests (rolled back).
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

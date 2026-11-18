@@ -12,7 +12,7 @@ import type { BookingTab } from '@/domain/admin';
 import type { AdminReport, BlockedPerson, ReportReason } from '@/domain/safety';
 
 /**
- * All server calls, on Supabase (prsnn-backend/supabase). Every call is an RPC
+ * All server calls, on Supabase (backend/supabase). Every call is an RPC
  * to a function that checks who is calling, or a table read behind row-level
  * security. Errors come back as Error(message) with the server's wording.
  */

@@ -2,7 +2,7 @@
 
 Source of truth: the 24-screen mock-up board (screens 1–21 and 24 are
 mobile; 22 is the web admin) and the web palette in
-`prsnn-frontend/app/globals.css`. **Keep the theme and palette as they are.**
+`web/app/globals.css`. **Keep the theme and palette as they are.**
 Code tokens live in `src/theme/tokens.ts` and `src/theme/fonts.ts`.
 
 ## Next palette (approved 2026-11-14, not applied yet)

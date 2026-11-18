@@ -5,7 +5,7 @@ waiting on the owner. "Done" means it is built or published in the repos; "Owner
 business owner can do it (registration, a contract, a filing). This is a working checklist, not
 legal advice: have a lawyer and a CA read the policies and the Owner items before launch.
 
-Public policy pages (website, one source in `prsnn-frontend/app/(site)/_lib/legal.jsx`):
+Public policy pages (website, one source in `web/app/(site)/_lib/legal.jsx`):
 `/terms` · `/privacy` · `/refunds` · `/guidelines` · `/companion-terms` · `/grievance` ·
 `/child-safety` · `/cookies` · `/delete-account` · `/safety` · `/legal` (all of them).
 The app links to these pages (`src/lib/config.ts` → `LINKS`), so the app and site always show the same text.
