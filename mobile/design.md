@@ -1,0 +1,243 @@
+# prsnn mobile — Design
+
+Source of truth: the 24-screen mock-up board (screens 1–21 and 24 are
+mobile; 22 is the web admin) and the web palette in
+`web/app/globals.css`. **Keep the theme and palette as they are.**
+Code tokens live in `src/theme/tokens.ts` and `src/theme/fonts.ts`.
+
+## Next palette (approved 2026-11-14, not applied yet)
+
+Chosen by the owner: Two’s light screens with Hour’s champagne details, **Urbanist titles**
+(option A in `preview/blend-screens.html`). The app still uses the palette below until the
+owner says to switch; then these become the tokens in `src/theme/tokens.ts`.
+
+| Token | Hex | Use |
+|---|---|---|
+| `porcelain` | `#F1F1F4` | App background |
+| `white` | `#FFFFFF` | Cards, sheets, inputs, tab bar |
+| `midnight` | `#181B34` | Text, primary buttons, my chat bubbles, selected chips |
+| `muted` | `#6B6E85` | Secondary text |
+| `champagne` | `#C9B68E` | Logo diamond, Popular pill, selected-card border, button on photos |
+| `champagneDeep` | `#8E7646` | Savings text (readable on white) |
+| `champagneMist` | `#F6F1E6` | Selected card fill, safety tip |
+| `line` | `rgba(24,27,52,.08)` | Hairlines |
+
+Type: **Urbanist** 600 for titles, 400–500 for text.
+
+**Logo (approved 2026-11-14, not applied yet):** the wordmark **“prsnn.”** in **Outfit Bold (700)**,
+tracking −0.045 em, ink in midnight (or porcelain/white on dark), with a **round full stop**
+(diameter 0.2 × font size, 0.045 em after the last n). Dot colour: **champagne `#C9B68E`** on midnight
+and photos, **deep champagne `#8E7646`** on porcelain and white. App icon: “p.” in the same style on
+midnight (porcelain p, champagne dot) or white (midnight p, deep-champagne dot). Reference:
+`preview/wordmark-dot.html` (“In use”). Replaces the italic Lora wordmark when the new look is applied.
+
+**Home categories (approved 2026-11-14, not applied yet): Wallet, “B · Lift to choose”**
+(`preview/wallet-variants.html`). The chosen category is a large photo card (radius 24, midnight
+gradient over the photo, logo and “n of 5” on top, name in Urbanist 600 24, one line, a champagne
+“Find company →” button). The other categories wait below as slim overlapping card tabs, each in its
+own material with fine engraved lines and a small round photo: New in Town = midnight, Don’t Go Alone =
+champagne, Explore & Discover = pearl (white), For a Loved One = steel `#3A3F5C`, Work & Study = mist
+`#E6E6EC`. Tapping a tab lifts it into the large card.
+
+**Companion “The lengths you offer” (approved 2026-11-14, not applied yet)**
+(`preview/wallet-companion.html`). All twelve lengths (1–12 h) as card rows, 62 pt tall, radius 18,
+fine engraved lines. Each row: a tick box, “N hours” (Urbanist 600 15) with “Popular” on 4 h and
+“Best value” on 12 h, “Members pay ₹X” under it, and on the right “You get” over the companion’s
+80% (Outfit 700 17, `floor(price × 0.8)`, from `DEFAULT_PACKAGE_PRICES` / live pricing). Card
+materials: 4 h midnight, 6 h steel, 12 h champagne; the others alternate pearl (odd) and mist (even).
+On dark cards the ticked box is champagne with a midnight tick; on light cards midnight with a
+white tick. The list scrolls; “Save N lengths” stays pinned at the bottom.
+
+## Palette ("2026 Presence": mist, ink, moss, signal)
+
+| Token | Hex | Use |
+|---|---|---|
+| `mist` | `#F3F1EB` | App background |
+| `paper` | `#FAF9F6` | Cards, sheets, inputs, tab bar |
+| `mistDeep` | `#E8E5DC` | Pressed states, segmented track |
+| `ink` | `#0E110D` | Primary text |
+| `gray500` (textMuted) | `#6A665C` | Secondary text (5.3:1 on mist) |
+| `moss` | `#2F4A34` | **The one accent**: primary buttons, selected chips, links |
+| `mossSoft` | `#D7E3D4` | Soft fills, avatar placeholders, icon wells |
+| `green50` | `#F2F6F1` | Unread rows, safety banners |
+| `clay` | `#C45C2A` | Wordmark full stop, hearts, warnings, unread dots |
+| `signal` | `#C8F03C` | Reserved accent. Never as text on light backgrounds |
+| `danger` | `#B3261E` | Destructive actions only |
+
+Online/verified dot: `#3FB950` with a paper ring.
+
+## Type
+
+- **Display**: Lora SemiBold (serif). Used for screen titles, the wordmark
+  and big numbers ("Life is better with good company.", "₹2,100").
+- **Text and UI**: DM Sans 400/500/600/700, the same body face as
+  prsnn.com.
+- Styles are named like iOS text styles (`largeTitle` … `caption`) and
+  scale with Dynamic Type. Display titles are capped at 1.4×, body at 2×.
+
+## Wordmark
+
+**“prsnn.”** in Lora SemiBold *Italic*, then a **clay** full stop. Use `<Wordmark/>` for the
+large mark, and `<Brand/>` inside running text (“ID verified by *prsnn.*”). System alerts
+can't show italics, so they use plain “prsnn.”. The app icon is a cream italic “p” and a
+clay “.” on moss. The store and app name stays “prsnn”.
+
+## Locked profiles
+
+A locked person's photo is replaced by `assets/images/locked.jpg`, a static blurred
+silhouette in the moss palette, with a cream lock badge (`<LockedPhoto/>`, and
+`<Avatar locked/>`). It is never a blurred copy of the real photo.
+
+## Shape and depth
+
+- Radius: 8 / 12 / 16 / 20 / 28. Cards use 20, buttons and inputs use 16,
+  chips are pills.
+- Shadows are soft and low. Cards get a hairline `line` border plus
+  `shadow.card`.
+- Primary button: moss, 54pt tall, full width at the bottom (thumb reach).
+
+## Navigation (iOS-native, works on Android)
+
+- **Tab bar** with 5 tabs: Home · Search · Bookings · Messages · Profile.
+  For companions the labels become Dashboard · Search · Requests ·
+  Messages · Profile.
+- The mock-up's **Mobile Menu (24) is replaced by the tab bar and Profile
+  list.** Hamburger menus are not native on iOS.
+- Stack screens have an inline header: back at the top left and swipe-back
+  intact.
+- Destructive actions (log out, cancel booking, decline, delete account)
+  confirm with a native alert, with the destructive option in red.
+
+## Screen map
+
+| # | Mock-up | Route | Notes |
+|---|---|---|---|
+| 1 | Splash | `/` | Photo collage + wordmark, auto-advances |
+| 2 | Onboarding | `/welcome` | |
+| 3 | Choose role | `/role` | Radio cards |
+| 4 | Login / sign up | `/login`, `/otp`, `/login-email` | Phone first; Email for web accounts |
+| 5 | Set PIN | `/pin?mode=set` · `/pin?mode=login` | Custom keypad, weak PINs refused |
+| — | About you | `/setup-profile` | Not in the mock-ups; needed for a name |
+| 6 | Home / Discover | `/home` (tab) | Companions see the dashboard (20) here |
+| 7 | Search & filters | `/search` (tab) | Location, sort, activity chips |
+| 8 | Companion profile | `/companion/[id]` | |
+| 9 | Select date & time | `/book/[id]` | Only days and times the companion offers |
+| 10 | Booking summary | `/book/review` | Checkout: price, “no booking fee”, how matching works, cancellation and refund terms, consent tick |
+| 11 | Payment | `/pay/[bookingId]` | Test checkout while `PAYMENT_MODE=simulated`, Razorpay otherwise |
+| 12 | Booking confirmed | `/confirmed?kind=paid` | “Payment received” → live timeline → “Booking confirmed!” |
+| — | Booking details | `/booking/[id]` | Status timeline, payment state, cancel with refund preview, Report a problem |
+| — | Report a problem | `/report/[id]` | Dispute on a paid booking |
+| — | Privacy & preferences | `/privacy` | Gender, show me, photo lock (re-consent), city and area |
+| 13 | Chat | `/chat/[bookingId]` | |
+| 14 | My bookings | `/bookings` (tab) | Upcoming / Past / Cancelled |
+| 15 | Profile | `/profile` (tab) | |
+| 16 | Notifications | `/notifications` | |
+| 17 | Become a companion | `/fellow/apply` | |
+| 18 | Companion onboarding | `/fellow/onboarding` | 5 steps |
+| 19 | Verification | `/fellow/verification` | |
+| 20 | Companion dashboard | `/home` (companion) | |
+| 21 | Earnings | `/fellow/earnings` | |
+| 22 | Admin dashboard | — | Web only |
+| 24 | Mobile menu | — | Replaced by the tab bar |
+
+## Motion
+
+Built with Reanimated 4 (`src/components/ui/motion.tsx`) and the timings from the
+animate-expo skill. Motion only where it does a job; tabs never animate.
+
+| Where | What | Why |
+|---|---|---|
+| Login, PIN (seen rarely) | Blocks fade up 12pt, 420ms, 70ms stagger; the wordmark's clay dot settles in last | Explanation / first impression |
+| Every button, PIN key | Scale 0.97 (keys 0.94) on press-in, 100ms | Feedback |
+| PIN boxes | Dot pops in (scale 0.5→1, 140ms) as each digit lands; 160ms pause on the 4th | State |
+| Wrong PIN, invalid number | Short horizontal shake + error haptic | Feedback |
+| Home photo cards | Deck: the card under the finger is full size; neighbours sit 8% smaller, 4° tilted and 18pt lower, and trade places as you swipe (UI thread, follows the finger). Photo drifts ~7% slower than its card; the page dot stretches 6→18pt | Depth, position |
+| Booking confirmed | Your photo and the companion's slide together (560ms), a green tick pops between them (+480ms), success haptic | The payoff moment |
+| Booking progress | When a step completes while open, the line fills down (420ms) and its node pops (360ms); on open, it's already drawn | State |
+| Chat | New messages rise 12pt from the input (260ms); "typing…" dots (Realtime broadcast, nothing stored) | Feedback |
+| Choosing a length | The total on Continue rolls to the new price (450ms); screen readers hear the final price | What changed |
+
+Curve: `cubic-bezier(0.23, 1, 0.32, 1)` (strong ease-out), never ease-in. With
+Reduce Motion on, entrances become a 200ms fade and nothing moves or shakes.
+Entrances are Reanimated CSS animations, not `entering` layout animations (on web
+those pin elements in place when the layout changes).
+
+## States every data screen has
+
+Loading (spinner), error (message + Try again), empty (icon, one line, next
+action) and pull-to-refresh on lists.
+
+## Accessibility
+
+- Every icon-only button has a label. Chips and segments expose
+  `selected`, radios expose `checked`.
+- Touch targets are 44–48pt or larger.
+- Text contrast is 4.5:1 or higher (muted grey `#6A665C` on mist passes).
+- Haptics are used only for meaningful moments: sending a request, paying,
+  success, PIN errors, and one tick per PIN key.
+- The PIN keypad has 76pt round keys, registers a digit the moment a key is
+  touched, never drops fast taps, and accepts a hardware keyboard.
+
+## Photo nudge, Available today, photo viewer (2026-11-18)
+
+- **Open by default.** Everyone starts with an open photo. Tapping **Locked** opens a bottom sheet first:
+  lock → eye in champagne, "Public photos get more bookings", three points on a champagne-mist panel
+  (shown higher in search, still safe, change any time), midnight **Keep my photo visible**, ghost **Lock it anyway**.
+- **Available today** (Search, under the search field): a 60 pt switch card. Off: champagne-mist fill, champagne
+  2 pt border, soft champagne glow and a pulsing dot. On: midnight fill, champagne switch. Rows then carry a
+  champagne-mist "Free today · till 9 PM" pill.
+- **Photo viewer.** The tapped photo grows (320 ms, ease-out) into a round photo, at most 340 pt, with a 3 pt champagne
+  ring, over midnight at 94%. Name, verified shield, area and price below, then View profile (outline) and Book
+  (champagne). Swipe down, tap outside or ✕ to close. No motion with reduced motion turned on.
+
+## Photos
+
+The marketing photos in `assets/images/` come from the web app's `public/`
+folder, compressed to around 50–115 KB each.
+
+## Price cards (`PackageGrid`)
+
+Two columns; an odd last card spans the full width (12 hours). Each card, top to bottom:
+duration (footnote, muted) → **total** (title2, the most prominent number) → hourly rate
+(caption, muted) → **“Save ₹X”** in moss (caption, semibold) when there is a saving.
+The 4-hour card carries a **“Popular choice”** pill. The selected card gets a 1.5 pt moss
+border and the `green50` background; unselected cards are paper with a `line` border.
+In companion mode the cards are multi-select with a checkbox and an extra line,
+**“You get ₹X”** (their 80%). Cards are `accessibilityRole="radio"` (booking) or
+`"checkbox"` (companion), labelled with duration, price and saving.
+
+## Tap to advance
+
+Onboarding choices (role, I am, Show me, visibility, city, area) are single taps that move
+to the next step with no Confirm button. Only free text (name) has a Next button.
+
+## Screens v2 (approved 2026-11-14, not built yet)
+
+Every screen and state is in `preview/all-screens-v2.html` (121 screens), checked against the
+current app (`preview/screens-gap-audit.md`). It adds one feature: an SOS button in the chat header
+(live from session start to 1 h after the end, same alert as the booking screen).
+
+**Onboarding copy stays very simple** (owner, 2026-11-14): one short title and at most one short
+line per step, e.g. "I am", "Where are you based?", "Who would you like to meet?" (Women, Men,
+Non-binary, Anyone), "Add your photo" (Face clearly visible · Just you · Good light), "Who can see
+your photo?" (Locked: only people you've booked with · Open: everyone), "How long can you meet?",
+"When are you free?", "Almost done". No long explanations in setup or companion onboarding.
+
+## Staff modes (2026-11-18)
+
+Staff get a third segment: **Admin | Booking | Companion** (Companion only for companions). In Admin the pill is
+steel with the champagne segment; it sits above Admin's header. Staff open in Admin; Profile shows their hats
+("Superadmin · Member") in deep champagne under the name, and a "Switch to Admin" row.
+
+## Booking and Companion modes (2026-11-16)
+One account, two modes, for anyone who is an approved companion (members never see the switch).
+- **Booking mode** (tabs: Home · Search · My bookings · Chats · Profile): the bookings I made and chats
+  with companions I booked.
+- **Companion mode** (tabs: Today · Requests · Earnings · Chats · Profile): requests I received, my
+  earnings and chats with my clients.
+- The **Booking | Companion** switch sits at the top of every main screen (light pill in Booking mode,
+  midnight pill with a gold segment in Companion mode) and in Profile. A gold count on the other side
+  shows what's waiting there; Home (Booking mode) also shows "N new requests in Companion mode · Switch".
+- Each booking belongs to one mode by who booked it (`sideOf`, `modeOfSide`), never by the account role.
+  Notifications open in their mode (`modeForNotification`). The last mode is remembered on the device
+  (`prefs.mode`); a new companion starts in Companion mode. Rules and tests: src/domain/mode.ts.
