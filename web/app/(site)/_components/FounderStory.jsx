@@ -15,7 +15,7 @@ export default function FounderStory({ onHome = true }) {
     <section id="story" className="s-dark s-founder" aria-labelledby="story-h">
       <div className="s-wrap s-sec" style={{ display: 'flex', flexWrap: 'wrap', gap: 56, alignItems: 'center' }}>
         <figure>
-          <Image src="/site/founder-mukarram.jpg" alt={`${FOUNDER}, founder of prsnn`} width={1206} height={1203} sizes="(max-width: 860px) 100vw, 420px" />
+          <Image src="/site/founder-mukarram-v2.jpg" alt={`${FOUNDER}, founder of prsnn`} width={1024} height={1286} sizes="(max-width: 860px) 100vw, 420px" />
           <figcaption><b>{rich(FOUNDER)}</b><small>Founder, <Name /></small></figcaption>
         </figure>
         <div className="s-story">
