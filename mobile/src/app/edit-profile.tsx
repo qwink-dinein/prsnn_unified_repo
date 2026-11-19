@@ -91,7 +91,7 @@ function EditForm({ p }: { p?: Profile }) {
           </>
         ) : null}
         {p?.phoneNumber ? <TextField label="Mobile number" value={`+91 ${p.phoneNumber}`} editable={false} hint="Your number is never shown to other members." /> : null}
-        {photo ? <Notice text="A new photo is reviewed by our team before others see it." /> : null}
+        {photo ? <Notice text="Our team checks a new photo before others see it. Until then, people keep seeing your current photo." /> : null}
         {error ? <Notice tone="danger" text={`${error} Nothing was lost — try again.`} /> : null}
         {done ? <Notice tone="success" text="Saved." /> : null}
       </View>

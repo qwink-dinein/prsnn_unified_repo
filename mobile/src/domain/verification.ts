@@ -50,3 +50,29 @@ export function companionStatusLine(s?: VerificationStatus | null): string {
 /** Short value for the profile row. */
 export const idCheckValue = (s?: VerificationStatus | null) =>
   s === 'verified' ? 'Verified' : s === 'pending' ? 'In review' : s === 'rejected' ? 'Send a new ID' : s === 'id_required' ? 'At first booking' : 'Finish profile';
+
+/**
+ * What the "Fix and resubmit" screen asks for, from the admin's request (notification action).
+ * target=photo (anyone): a new photo. target=profile (companions): a new photo only if the photo was
+ * flagged, city and area if "Wrong area or city" was ticked, and always the optional bio and activities.
+ */
+export function fixNeeds(
+  target: 'photo' | 'profile',
+  role: string | undefined,
+  photoStatus: string | undefined,
+  reasons: string[] = [],
+): { photo: boolean; area: boolean; profile: boolean } {
+  const profile = target === 'profile' && role === 'companion';
+  return {
+    profile,
+    photo: !profile || photoStatus === 'changes_requested' || reasons.includes('photo'),
+    area: profile && reasons.includes('area'),
+  };
+}
+
+/** Reasons travel in the route as "photo,area"; unknown words are ignored. */
+export const parseReasons = (raw?: string | string[]) =>
+  (Array.isArray(raw) ? raw.join(',') : raw ?? '')
+    .split(',')
+    .map((r) => r.trim())
+    .filter((r) => ['photo', 'bio', 'area', 'other'].includes(r));

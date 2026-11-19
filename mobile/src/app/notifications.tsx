@@ -44,7 +44,7 @@ function open(n: AppNotification) {
     if (m) router.navigate('/bookings');
     return;
   }
-  if (a.kind === 'fix' || a.kind === 'rejected') router.push({ pathname: '/fix', params: { target: a.target ?? 'photo' } });
+  if (a.kind === 'fix' || a.kind === 'rejected') router.push({ pathname: '/fix', params: { target: a.target ?? 'photo', reasons: (a.reasons ?? []).join(',') } });
   else if (a.kind === 'approved') router.push('/fellow/verification');
   else if (a.kind === 'review') router.push('/admin/approvals');
   else if (a.kind === 'report') router.push('/admin/reports');

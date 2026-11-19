@@ -16,33 +16,49 @@ import { svc } from '@/services';
 import { errorMessage, type UploadFile } from '@/lib/api';
 import { pickImage } from '@/lib/pickImage';
 import { useSession } from '@/state/session';
+import { LocationFields, type LocationValue } from '@/components/LocationFields';
+import { stateOf } from '@/domain/places';
+import { fixNeeds, parseReasons } from '@/domain/verification';
 
 /**
  * Opened from "Fix and resubmit" in the bell: shows what our team asked for,
  * lets the person change it, and sends it back for review.
- * target=photo → a new photo. target=profile (companions) → photo, bio, categories.
+ * target=photo → a new photo. target=profile (companions) → photo if flagged, city and area if
+ * “Wrong area or city” was ticked, and the optional bio and categories.
  */
 export default function Fix() {
-  const { target = 'photo' } = useLocalSearchParams<{ target?: 'photo' | 'profile' }>();
+  const { target = 'photo', reasons: rawReasons } = useLocalSearchParams<{ target?: 'photo' | 'profile'; reasons?: string }>();
   const user = useSession((s) => s.user);
   const updateUser = useSession((s) => s.updateUser);
   const qc = useQueryClient();
-  const isProfile = target === 'profile' && user?.role === 'companion';
+  const needs = fixNeeds(target, user?.role, user?.photoStatus, parseReasons(rawReasons));
+  const isProfile = needs.profile;
   const note = isProfile ? user?.approvalNote ?? user?.photoNote : user?.photoNote ?? user?.approvalNote;
   const [photo, setPhoto] = useState<UploadFile | null>(null);
-  const [d, setD, clearDraft] = useDraft(`fix.${user?.id}`, { description: '', categories: (user?.categories ?? []) as string[] });
+  const [d, setD, clearDraft] = useDraft(`fix.${user?.id}`, {
+    description: '',
+    categories: (user?.categories ?? []) as string[],
+    place: { state: user?.state ?? stateOf(user?.city) ?? '', city: user?.city ?? '', area: user?.area ?? '' } as LocationValue,
+  });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
-  const photoNeeded = !isProfile || user?.photoStatus === 'changes_requested';
+  const photoNeeded = needs.photo;
 
   const send = async () => {
     if (photoNeeded && !photo) return setError('Add a new photo first.');
+    if (needs.area && (!d.place.city || !d.place.area)) return setError('Choose your city and the area you’re based in.');
     if (isProfile && d.description && d.description.trim().length < 30) return setError('Write at least 30 characters about yourself, or leave it empty to keep your current text.');
     setBusy(true);
     setError(null);
     try {
-      let fresh = await svc.saveProfile({ ...(isProfile ? { categories: d.categories, ...(d.description.trim() ? { description: d.description.trim() } : {}) } : {}) }, photo);
+      let fresh = await svc.saveProfile(
+        {
+          ...(isProfile ? { categories: d.categories, ...(d.description.trim() ? { description: d.description.trim() } : {}) } : {}),
+          ...(needs.area ? { state: d.place.state, city: d.place.city, area: d.place.area } : {}),
+        },
+        photo,
+      );
       if (isProfile) {
         await svc.recordConsents(['companion_terms', 'house_rules']);
         fresh = await svc.resubmitForReview();
@@ -101,6 +117,13 @@ export default function Fix() {
               <Text variant="footnote">{t}</Text>
             </View>
           ))}
+        </View>
+      ) : null}
+
+      {needs.area ? (
+        <View style={{ gap: space.sm, marginTop: space.lg }}>
+          <Text variant="subhead">Where you’re based</Text>
+          <LocationFields value={d.place} onChange={(place) => setD((c) => ({ ...c, place }))} />
         </View>
       ) : null}
 
