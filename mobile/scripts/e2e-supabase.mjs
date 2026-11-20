@@ -61,6 +61,12 @@ r0 = await rpc(mem2, 'price_offers'); ok(r0.data?.campaign?.label === 'E2E sale'
 ok(!!(await rpc(mem2, 'admin_end_campaign', { cid: campId })).error, 'members cannot end a campaign');
 r0 = await rpc(sup, 'admin_end_campaign', { cid: campId }); ok(/ended/.test(r0.data?.message ?? ''), 'superadmin ends it; prices back to normal', r0);
 
+console.log('1d. Force update: settings readable by anyone, only a superadmin changes them');
+r0 = await anon.from('settings').select('value').eq('key', 'app_update').maybeSingle();
+ok(!r0.error && !!r0.data?.value?.android, 'the app can read the update rule before sign-in', r0);
+ok(!!(await rpc(mem, 'admin_set_app_update', { p: { android: { minVersion: '99.0.0' } } })).error, 'members cannot force an update');
+ok(/https/.test((await rpc(sup, 'admin_set_app_update', { p: { ios: { url: 'http://example.com' } } })).error ?? ''), 'update links must be https');
+
 console.log('2. Profiles');
 let r = await rpc(mem, 'update_my_profile', { p: { fullName: 'Riya Test', gender: 'woman', seeGender: 'everyone', profileVisibility: 'open', visibilityConsent: true, city: 'Hyderabad', area: 'Gachibowli' } });
 ok(r.data?.fullName === 'Riya Test', 'member saves profile', r);

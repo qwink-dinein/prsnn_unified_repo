@@ -295,6 +295,10 @@ export const demoAdmin: Backend['admin'] = {
     log('campaign.end', { kind: 'campaign', id }, {});
     return wait({ message: 'Campaign ended. Bookings already made keep their price.' });
   },
+  setAppUpdate: (p) => {
+    if (!isSuper()) return fail('Access denied');
+    return wait({ message: 'Saved (sample mode: the demo is never blocked).', value: p });
+  },
   setFirstHourOffer: (on, price) => {
     if (!isSuper()) return fail('Access denied');
     if (price < 1 || price >= pricing().packagePrices[1]) return fail(`The first-hour price must be between ₹1 and ₹${pricing().packagePrices[1] - 1}.`);

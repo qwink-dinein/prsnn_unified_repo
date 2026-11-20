@@ -110,6 +110,8 @@ const auth = (u: SessionUser = me): AuthResult => ({ token: 'demo-token', user: 
 // Snapshot of the sample data, so an admin preview can start clean and leave nothing behind.
 const INITIAL = JSON.stringify({ bookings, notifications });
 const keys = new Map<string, string>(); // idempotencyKey → booking id
+/** Sample-mode force-update settings (Admin → App updates). Never blocks the demo. */
+export const demoAppUpdate: import('@/domain/appUpdate').AppUpdateSettings = { android: { minVersion: null, minBuild: 0, url: null }, ios: { minVersion: null, minBuild: 0, url: null }, message: null };
 /** Same "first booking" rule as the server: no paid booking yet (a refund because nobody was free doesn't count). */
 const demoIsNew = () =>
   !bookings.some((b) => b.requesterId === 'me' && (b.paymentStatus === 'paid' || b.paymentStatus === 'refunded') && b.allocation?.state !== 'failed');
@@ -243,6 +245,8 @@ export const demo: Backend = {
   myBlocks: () => wait([...demoBlocks]),
   reportUser: (_id: string, _reason: ReportReason, _details?: string, _bookingId?: string, alsoBlock = false) =>
     wait({ message: alsoBlock ? 'Thanks. We’ve got your report and blocked them. Our team will look into it.' : 'Thanks. We’ve got your report. Our team will look into it.' }),
+  appUpdate: () => wait(demoAppUpdate),
+  appStoreVersion: () => wait(null),
   priceOffers: () => {
     const isNew = demoIsNew();
     const c = demoActiveCampaign();

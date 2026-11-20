@@ -48,6 +48,7 @@ export const qk = {
   profileCheck: ['profile', 'check'] as const,
   pricing: ['settings', 'pricing'] as const,
   offers: ['offers'] as const,
+  appUpdate: ['settings', 'appUpdate'] as const,
   admin: {
     all: ['admin'] as const,
     overview: ['admin', 'overview'] as const,

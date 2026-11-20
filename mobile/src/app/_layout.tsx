@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { AppState, StyleSheet, View } from 'react-native';
 import { MAX_APP_WIDTH, useAppWidth } from '@/lib/layout';
 import { Stack, router } from 'expo-router';
 import { PreviewStrip } from '@/lib/preview';
@@ -20,6 +20,8 @@ import { usePricingSync } from '@/lib/pricing';
 import { registerForPush } from '@/lib/push';
 import { useLiveMe, useLiveUnread } from '@/lib/live';
 import { OfflineBanner, connectOnlineManager } from '@/components/ui/states';
+import { checkForUpdate, type UpdateCheck } from '@/lib/appUpdate';
+import { UpdateRequired } from '@/components/UpdateRequired';
 
 /** App-wide background work that needs React Query: live prices, push token after sign-in. */
 function AppEffects() {
@@ -48,6 +50,22 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 export default function RootLayout() {
   const hydrated = useSession((s) => s.hydrated);
   const [fontsReady, setFontsReady] = useState(false);
+  // Force update: checked before the app opens (at most ~4 s; no answer lets people in), and again whenever the
+  // app comes back to the front, e.g. after the person visited the store.
+  const [update, setUpdate] = useState<UpdateCheck | null>(null);
+  const recheck = useCallback(async () => setUpdate(await checkForUpdate()), []);
+  useEffect(() => {
+    let live = true;
+    const run = () => checkForUpdate().then((u) => live && setUpdate(u));
+    run();
+    const sub = AppState.addEventListener('change', (s) => {
+      if (s === 'active') run();
+    });
+    return () => {
+      live = false;
+      sub.remove();
+    };
+  }, []);
 
   useEffect(() => {
     Font.loadAsync(fontAssets)
@@ -64,7 +82,7 @@ export default function RootLayout() {
   }, []);
 
   const { wide } = useAppWidth();
-  const ready = hydrated && fontsReady;
+  const ready = hydrated && fontsReady && update !== null;
   useEffect(() => {
     if (ready) SplashScreen.hideAsync().catch(() => {});
   }, [ready]);
@@ -77,6 +95,12 @@ export default function RootLayout() {
       <View style={[styles.column, wide && styles.columnWide]}>
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
+          {update?.blocked ? (
+            <>
+              <StatusBar style="light" />
+              <UpdateRequired check={update} onRecheck={recheck} />
+            </>
+          ) : (
           <ConfirmProvider>
           <AppEffects />
           <StatusBar style="dark" />
@@ -92,6 +116,7 @@ export default function RootLayout() {
           </Stack>
           <PhotoViewerHost />
           </ConfirmProvider>
+          )}
         </QueryClientProvider>
       </SafeAreaProvider>
       </View>

@@ -616,3 +616,18 @@ Migration `20261120100000_first_hour_offer_and_campaigns` (applied 20 Nov). Test
   `admin_set_first_hour_offer(is_on, price)`. App: Admin → Prices | Campaigns, `admin/campaign` form with a Home preview.
 - App: `src/domain/offers.ts` (same rule as the server, bill lines, form checks), `components/OfferBanners.tsx`
   (Home cards, `useOffers`), offer prices on `PackageGrid`, the companion footer and checkout.
+
+## Round 28 (2026-11-20): force update
+
+Migration `20261120140000_app_update_settings` (applied 20 Nov). Test: `backend/supabase/tests/round17-app-update.sql`
+(rolled back). e2e: step 1d.
+
+- `settings.app_update` (readable by everyone): `{ android: {minVersion, minBuild, url}, ios: {…}, message }`. Starts
+  empty, so nobody is blocked.
+- `public.admin_set_app_update(p jsonb)` (superadmin): checks the version (`1.0.3`), whole-number build and https link,
+  saves and audits (`settings.app_update`). App: Admin → App updates.
+- App: on every launch and every return to the front, `src/lib/appUpdate.ts` `checkForUpdate()` compares the installed
+  version/build (expo-application) with the rule; on iPhone it also asks Apple's public lookup
+  (`itunes.apple.com/lookup?bundleId=…`) for the live App Store version. Older installs see `UpdateRequired` (no way past
+  it; Android back closes the app). Offline, slow (4 s) or any error lets the person in. Web and Expo Go are never
+  blocked. Rule: `src/domain/appUpdate.ts` (`updateNeeded`), tests in `__tests__/app-update.test.ts`.
