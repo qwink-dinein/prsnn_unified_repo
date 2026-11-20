@@ -3,6 +3,7 @@ import PageHead from '../_components/PageHead';
 import StoreButtons from '../_components/StoreButtons';
 import JsonLd from '../_components/JsonLd';
 import { HOURS, PRICES, SITE_URL, hoursLabel, inr, savingFor } from '../_lib/content';
+import OfferPrice from '../_components/OfferPrice';
 import { Refunds } from '../_lib/legal';
 
 export const metadata = {
@@ -33,7 +34,7 @@ export default function Pricing() {
                     <th scope="row" style={{ fontWeight: 500 }}>{rich(hoursLabel(h))}{rich(h === 4 ? <span className="s-tag" style={{ marginLeft: 8, background: 'var(--midnight)', color: 'var(--porcelain)' }}>Suggested</span> : null)}{rich(h === 12 ? <span className="s-tag" style={{ marginLeft: 8 }}>Best value</span> : null)}</th>
                     <td style={{ color: 'var(--muted)' }}>{rich(inr(Math.round(PRICES[h] / h)))}</td>
                     <td style={{ color: 'var(--champagne-text)', fontWeight: 600 }}>{rich(savingFor(h) ? inr(savingFor(h)) : '—')}</td>
-                    <td className="s-num" style={{ fontSize: 19 }}>{rich(inr(PRICES[h]))}</td>
+                    <td className="s-num" style={{ fontSize: 19 }}><OfferPrice hours={h} normal={PRICES[h]} /></td>
                   </tr>
                 ))}
               </tbody>

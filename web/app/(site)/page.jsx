@@ -7,6 +7,7 @@ import PhotoCardRow from './_components/PhotoCardRow';
 import CommunityBanner from './_components/CommunityBanner';
 import UseExplorer from './_components/UseExplorer';
 import PricePicker from './_components/PricePicker';
+import OfferCards from './_components/OfferCards';
 import InterestForm from './_components/InterestForm';
 import StoreButtons from './_components/StoreButtons';
 import JsonLd from './_components/JsonLd';
@@ -63,6 +64,8 @@ export default function Home() {
           <HeroStack />
         </div>
       </section>
+
+      <OfferCards />
 
       <section className="s-promises" aria-label="Our promises">
         <div className="s-wrap">

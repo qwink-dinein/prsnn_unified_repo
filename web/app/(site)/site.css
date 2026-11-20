@@ -448,3 +448,42 @@
 
 /* The company name in running text (Name / rich in Brand.jsx): "prsnn." in italics, slightly heavier. */
 .s-brand { font-style: italic; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; color: inherit; }
+
+
+/* ── Live offers (first-hour offer, admin campaigns): shown only while active ── */
+.s-offerbar { background: var(--midnight); color: var(--porcelain); font-size: 14px; }
+.s-offerbar-in { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; padding: 9px 0; text-align: center; }
+.s-offerbar-tag { background: var(--champagne); color: var(--midnight); font-weight: 800; font-size: 11.5px; letter-spacing: 1.2px; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; }
+.s-offerbar-text { font-weight: 600; }
+.s-offerbar-left { color: var(--on-dark-dim); }
+.s-offerbar-cta { color: var(--champagne); font-weight: 700; text-decoration: none; }
+.s-offerbar-cta:hover { text-decoration: underline; }
+.s-offers { padding: 8px 0 32px; }
+.s-offers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.s-offer { border-radius: var(--radius); padding: 28px; display: flex; flex-direction: column; gap: 12px; }
+.s-offer h2 { font-size: 30px; line-height: 1.1; letter-spacing: -0.6px; margin: 4px 0 0; font-weight: 800; }
+.s-offer p { margin: 0; font-size: 15px; line-height: 1.5; }
+.s-offer-first { background: var(--midnight); color: var(--porcelain); }
+.s-offer-first p { color: var(--on-dark); }
+.s-offer-camp { background: var(--champagne); color: var(--midnight); }
+.s-offer-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.s-offer-pill { align-self: flex-start; background: var(--champagne); color: var(--midnight); font-weight: 800; font-size: 12px; letter-spacing: 1.4px; text-transform: uppercase; padding: 5px 12px; border-radius: 999px; }
+.s-offer-pill-dark { background: var(--midnight); color: var(--champagne); }
+.s-offer-left { font-weight: 800; font-size: 14px; }
+.s-offer-price { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.s-offer-price s { color: var(--on-dark-dim); font-size: 20px; }
+.s-offer-price b { font-family: var(--font-outfit), sans-serif; color: var(--champagne); font-size: 40px; letter-spacing: -1px; }
+.s-offer-ex { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 4px 0 6px; }
+.s-offer-ex > div { background: rgba(255, 255, 255, 0.45); border-radius: 14px; padding: 10px 12px; display: flex; flex-direction: column; gap: 1px; }
+.s-offer-ex > div.s-offer-ex-dark { background: rgba(255, 255, 255, 0.08); }
+.s-offer-ex small { font-size: 12.5px; font-weight: 700; }
+.s-offer-ex s { font-size: 13px; opacity: 0.7; }
+.s-offer-ex b { font-family: var(--font-outfit), sans-serif; font-size: 22px; letter-spacing: -0.4px; }
+.s-offer-ex em { font-style: normal; font-size: 11.5px; opacity: 0.8; }
+.s-offerprice s { opacity: 0.55; font-size: 0.62em; margin-right: 6px; font-weight: 600; }
+.s-offerprice small { display: block; font-size: 13px; font-family: var(--font-urbanist), sans-serif; font-weight: 600; letter-spacing: 0; opacity: 0.85; margin-top: 2px; }
+@media (max-width: 560px) {
+  .s-offer { padding: 22px; }
+  .s-offer h2 { font-size: 25px; }
+  .s-offerbar { font-size: 13px; }
+}

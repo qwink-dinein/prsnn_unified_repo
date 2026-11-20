@@ -1,4 +1,5 @@
 import { rich } from './_components/Brand';
+import OfferBar from './_components/OfferBar';
 import Link from 'next/link';
 import { Outfit, Urbanist } from 'next/font/google';
 import './site.css';
@@ -64,6 +65,7 @@ export default function SiteLayout({ children }) {
     <div className={`s-root ${urbanist.variable} ${outfit.variable}`}>
       <Link className="s-skip" href="#main">Skip to content</Link>
       <JsonLd data={graph} />
+      <OfferBar />
       <Header />
       <main id="main">{rich(children)}</main>
       <Footer />

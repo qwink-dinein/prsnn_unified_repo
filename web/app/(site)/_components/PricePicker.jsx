@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { PRICES, hoursLabel, inr, savingFor } from '../_lib/content';
 import { Guilloche, Mark, rich } from './Brand';
+import OfferPrice from './OfferPrice';
 
 const MAT = { 1: 'pearl', 2: 'mist', 4: 'midnight', 6: 'steel', 12: 'champagne' };
 const CHOICES = [1, 2, 4, 6, 12];
@@ -36,7 +37,7 @@ export default function PricePicker() {
           </div>
           <div className="s-pricecard-body">
             <small>{rich(hoursLabel(h))}</small>
-            <strong>{rich(inr(PRICES[h]))}</strong>
+            <strong><OfferPrice hours={h} normal={PRICES[h]} /></strong>
             <p>{rich(inr(Math.round(PRICES[h] / h)))} an hour{rich(save ? `  ·  Save ${inr(save)}` : '')}</p>
           </div>
         </div>
