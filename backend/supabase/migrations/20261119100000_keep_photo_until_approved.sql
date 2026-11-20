@@ -1,4 +1,4 @@
--- STATUS: written 19 Nov, NOT applied yet (waiting for the owner to approve the Supabase prompt).
+-- STATUS: applied 20 Nov (owner ran it in the SQL editor); checked live with round15.
 -- A new photo no longer hides the old one (owner, 19 Nov). Until staff approve a new photo, everyone
 -- else keeps seeing the last approved one. If staff ask for changes to the photo that is live, it is
 -- hidden at once. Removing the photo removes it everywhere. The person always sees their own latest upload.

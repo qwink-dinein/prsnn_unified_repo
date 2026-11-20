@@ -1,4 +1,4 @@
--- STATUS: written 20 Nov, NOT applied yet (waiting for the owner to approve the Supabase prompt or run it in the SQL editor).
+-- STATUS: applied 20 Nov; checked live (prices, campaigns, companion share) with round16.
 -- First-hour offer + admin campaigns (owner, 20 Nov).
 -- • First-hour offer: a member's first booking has its first hour at ₹99 and every other hour at the normal
 --   price, so it costs the package price minus (1-hour price − ₹99) = ₹300 off today. "First" = no paid

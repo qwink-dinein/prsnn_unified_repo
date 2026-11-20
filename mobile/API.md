@@ -586,7 +586,7 @@ Migration `20261118180000_companion_meets` (applied). Test: `backend/supabase/te
 
 ## Round 26 (2026-11-19): Fix screen asks for city and area; keep the old photo until a new one is approved
 
-Migration `20261119100000_keep_photo_until_approved` (**not applied yet**: waiting for the owner's Supabase approval).
+Migration `20261119100000_keep_photo_until_approved` (applied 20 Nov).
 Test: `backend/supabase/tests/round15-keep-photo-until-approved.sql` (rolled back).
 
 - `profiles.approved_photo_path`: the last photo staff approved. `private.public_photo` shows the current photo once
@@ -597,7 +597,7 @@ Test: `backend/supabase/tests/round15-keep-photo-until-approved.sql` (rolled bac
 
 ## Round 27 (2026-11-20): first-hour offer and admin campaigns
 
-Migration `20261120100000_first_hour_offer_and_campaigns` (**not applied yet**). Test:
+Migration `20261120100000_first_hour_offer_and_campaigns` (applied 20 Nov). Test:
 `backend/supabase/tests/round16-first-hour-offer-campaigns.sql` (rolled back). e2e: step 1c, and steps 4–5 accept the offer price.
 
 - **First-hour offer** (`settings.pricing.firstHourOffer = {on, price}`, default on at ₹99): a member with no paid
