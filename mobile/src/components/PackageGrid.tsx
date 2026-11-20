@@ -5,6 +5,8 @@ import { Text } from './ui/Text';
 import { Icon } from './ui/Icon';
 import { formatINR } from '@/domain/booking';
 import { companionShareOf, hourlyFor, hoursLabel, POPULAR_HOURS, priceFor, savingFor } from '@/domain/pricing';
+import { hasOffer, offerHint, quoteFor } from '@/domain/offers';
+import { useOffers } from './OfferBanners';
 
 type Props =
   | { mode: 'book'; hours: number[]; selected: number | null; onSelect: (h: number) => void }
@@ -31,19 +33,26 @@ const a11y = (h: number, mode: 'book' | 'offer') => {
 export function PackageGrid(props: Props) {
   const { hours, mode } = props;
   const isOn = (h: number) => (mode === 'offer' ? props.selected.includes(h) : props.selected === h);
+  // Members only: today's offer prices (companions always see their share of the normal price).
+  const offers = useOffers();
+  const offerOf = (h: number) => {
+    const q = mode === 'book' ? quoteFor(offers.data, h) : null;
+    return hasOffer(q) ? q : null;
+  };
   return (
     <View style={styles.grid} accessibilityRole={mode === 'book' ? 'radiogroup' : 'list'}>
       {hours.map((h) => {
         const on = isOn(h);
         const price = priceFor(h) ?? 0;
-        const tag = mode === 'book' ? tagFor(h, hours) : null;
+        const deal = offerOf(h);
+        const tag = deal ? 'Offer' : mode === 'book' ? tagFor(h, hours) : null;
         const fg = on ? colors.onMoss : colors.ink;
         return (
           <Pressable
             key={h}
             accessibilityRole={mode === 'book' ? 'radio' : 'checkbox'}
             accessibilityState={{ checked: on }}
-            accessibilityLabel={a11y(h, mode)}
+            accessibilityLabel={deal ? `${hoursLabel(h)}, offer ${formatINR(deal.price)} instead of ${formatINR(deal.normal)}${deal.kind === 'first_hour' ? ': first hour at the offer price, the rest at the normal price' : ''}.` : a11y(h, mode)}
             onPress={() => props.onSelect(h)}
             style={({ pressed }) => [styles.card, on && styles.cardOn, pressed && { opacity: 0.85 }]}
           >
@@ -55,11 +64,16 @@ export function PackageGrid(props: Props) {
                 <View style={[styles.tick, on ? styles.tickOn : null]}>{on ? <Icon name="check" size={11} color={colors.moss} strokeWidth={3} /> : null}</View>
               ) : null}
             </View>
+            {deal ? (
+              <Text variant="caption" color={on ? colors.gray300 : colors.gray500} numberOfLines={1} style={{ textDecorationLine: 'line-through' }}>
+                {formatINR(deal.normal)}
+              </Text>
+            ) : null}
             <Text style={[styles.price, { color: fg }]} numberOfLines={1} adjustsFontSizeToFit>
-              {mode === 'offer' ? formatINR(companionShareOf(price)) : formatINR(price)}
+              {mode === 'offer' ? formatINR(companionShareOf(price)) : formatINR(deal ? deal.price : price)}
             </Text>
             <Text variant="caption" color={on ? colors.onMoss : colors.gray500} numberOfLines={1} style={on ? { opacity: 0.85 } : undefined}>
-              {mode === 'offer' ? 'you get' : `${formatINR(hourlyFor(h))}/hr`}
+              {mode === 'offer' ? 'you get' : deal ? offerHint(deal, offers.data?.campaign) : `${formatINR(hourlyFor(h))}/hr`}
             </Text>
             {tag ? (
               <Text variant="caption" color={on ? colors.champagne : colors.champagneDeep} numberOfLines={1} style={{ fontFamily: fonts.semibold, marginTop: 2 }}>

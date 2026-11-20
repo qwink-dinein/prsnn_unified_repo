@@ -14,6 +14,8 @@ import { MetaLine, formatDate } from '@/components/bookings';
 import { placeOf } from '@/components/companions';
 import { amountDuePaise, canHomeVisit, durationLabel, endTimeOf, formatINR, formatTime, meetingPlaceError, rupees } from '@/domain/booking';
 import { hourlyFor, hoursLabel, priceFor, savingFor } from '@/domain/pricing';
+import { bill, hasOffer, quoteFor } from '@/domain/offers';
+import { useOffers } from '@/components/OfferBanners';
 import type { Duration, Relation } from '@/domain/types';
 import { svc, qk } from '@/services';
 import { missingConsents } from '@/domain/rules';
@@ -40,6 +42,7 @@ export default function Checkout() {
   const p = useLocalSearchParams<{ id: string; date: string; time: string; duration: Duration; category?: string }>();
   const qc = useQueryClient();
   const q = useQuery({ queryKey: qk.companion(p.id), queryFn: () => svc.companion(p.id) });
+  const offers = useOffers();
   const policy = useQuery({ queryKey: ['policy'], queryFn: svc.policy, staleTime: 3600_000 });
   const [d, setD, clearDraft] = useDraft(`checkout.${p.id}.${p.date}.${p.time}`, {
     note: '',
@@ -110,7 +113,10 @@ export default function Checkout() {
   if (q.isError || !q.data) return <ErrorState message={errorMessage(q.error)} onRetry={() => q.refetch()} />;
   const c = q.data;
   const hours = Number(p.duration) / 60;
-  const total = priceFor(hours) ?? rupees(amountDuePaise(c.pricePerHour ?? 0, p.duration));
+  const deal = quoteFor(offers.data, hours);
+  const offer = hasOffer(deal) ? deal : null;
+  // The server prices the booking itself; this is the same rule, so the button shows what they'll pay.
+  const total = offer ? offer.price : priceFor(hours) ?? rupees(amountDuePaise(c.pricePerHour ?? 0, p.duration));
   const first = c.fullName?.split(' ')[0] ?? 'your companion';
 
   return (
@@ -229,13 +235,35 @@ export default function Checkout() {
         Price
       </Text>
       <Card style={{ gap: space.md }}>
-        <View style={styles.line}>
-          <Text variant="callout" muted>
-            {hoursLabel(hours)} package · {formatINR(hourlyFor(hours))}/hour
-          </Text>
-          <Text variant="callout">{formatINR(total)}</Text>
-        </View>
-        {savingFor(hours) ? (
+        {offer ? (
+          <>
+            {bill(offer).map((l) => (
+              <View key={l.label} style={styles.line}>
+                <Text variant="callout" muted={!l.accent} color={l.accent ? colors.champagneDeep : undefined} style={{ flex: 1 }}>
+                  {l.accent && offer.kind === 'first_hour' ? '🎁 ' : ''}
+                  {l.label}
+                </Text>
+                <Text variant="callout" color={l.accent && offer.kind === 'campaign' ? colors.champagneDeep : undefined}>
+                  {l.was ? (
+                    <Text variant="footnote" muted style={{ textDecorationLine: 'line-through' }}>
+                      {l.was}
+                      {'  '}
+                    </Text>
+                  ) : null}
+                  {l.amount}
+                </Text>
+              </View>
+            ))}
+          </>
+        ) : (
+          <View style={styles.line}>
+            <Text variant="callout" muted>
+              {hoursLabel(hours)} package · {formatINR(hourlyFor(hours))}/hour
+            </Text>
+            <Text variant="callout">{formatINR(total)}</Text>
+          </View>
+        )}
+        {!offer && savingFor(hours) ? (
           <View style={styles.line}>
             <Text variant="callout" muted>
               You save vs. hourly
@@ -257,6 +285,12 @@ export default function Checkout() {
           <Text variant="headline">Total you pay now</Text>
           <Text variant="headline">{formatINR(total)}</Text>
         </View>
+        {offer ? (
+          <Text variant="footnote" color={colors.champagneDeep} style={{ fontFamily: 'Urbanist-SemiBold' }}>
+            You save {formatINR(offer.saving)} (normally {formatINR(offer.normal)}).
+            {offer.kind === 'first_hour' ? ' Only the first hour is at the offer price; extra hours are at the normal price. Once per member.' : ' The price is locked when you book.'}
+          </Text>
+        ) : null}
       </Card>
 
       <Text variant="title3" style={styles.h}>

@@ -130,6 +130,10 @@ export interface Booking {
   experience?: string;
   /** Fixed package price (₹), same for every companion. */
   packagePrice?: number;
+  /** Offer bookings: the normal price (packagePrice is what the member paid), which offer, and its label. */
+  listPrice?: number | null;
+  offerKind?: 'first_hour' | 'campaign' | null;
+  offerLabel?: string | null;
   /** What the companion receives (80%). */
   companionShare?: number;
   status: BookingStatus;

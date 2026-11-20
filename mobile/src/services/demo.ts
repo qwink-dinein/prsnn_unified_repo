@@ -4,7 +4,8 @@ import { priceFor, pricing } from '@/domain/pricing';
 import { useSession } from '@/state/session';
 import { needsIdToAccept } from '@/domain/verification';
 import type { Backend, AuthResult } from './backend';
-import { demoAdmin, demoRoleFor } from './demoAdmin';
+import { demoActiveCampaign, demoAdmin, demoOfferState, demoRoleFor } from './demoAdmin';
+import { quoteOf, type PriceOffers } from '@/domain/offers';
 import { LEGAL_VERSION, type Consent } from '@/domain/rules';
 import type { BlockedPerson, ReportReason } from '@/domain/safety';
 
@@ -109,6 +110,15 @@ const auth = (u: SessionUser = me): AuthResult => ({ token: 'demo-token', user: 
 // Snapshot of the sample data, so an admin preview can start clean and leave nothing behind.
 const INITIAL = JSON.stringify({ bookings, notifications });
 const keys = new Map<string, string>(); // idempotencyKey → booking id
+/** Same "first booking" rule as the server: no paid booking yet (a refund because nobody was free doesn't count). */
+const demoIsNew = () =>
+  !bookings.some((b) => b.requesterId === 'me' && (b.paymentStatus === 'paid' || b.paymentStatus === 'refunded') && b.allocation?.state !== 'failed');
+const demoQuote = (hours: number) => {
+  const c = demoActiveCampaign();
+  const isNew = demoIsNew();
+  const fh = demoOfferState.firstHour;
+  return quoteOf(hours, pricing().packagePrices, { firstHourPrice: fh.on ? fh.price : null, isNew, campaign: c && (c.audience === 'everyone' || isNew) ? c : null });
+};
 const find = (id: string) => [...bookings, ...incoming].find((b) => b._id === id);
 const patch = (id: string, p: Partial<Booking>) => {
   bookings = bookings.map((b) => (b._id === id ? { ...b, ...p } : b));
@@ -233,6 +243,16 @@ export const demo: Backend = {
   myBlocks: () => wait([...demoBlocks]),
   reportUser: (_id: string, _reason: ReportReason, _details?: string, _bookingId?: string, alsoBlock = false) =>
     wait({ message: alsoBlock ? 'Thanks. We’ve got your report and blocked them. Our team will look into it.' : 'Thanks. We’ve got your report. Our team will look into it.' }),
+  priceOffers: () => {
+    const isNew = demoIsNew();
+    const c = demoActiveCampaign();
+    const campaign = c && (c.audience === 'everyone' || isNew) ? { id: c.id, label: c.label, headline: c.headline, kind: c.kind, value: c.value, audience: c.audience, hours: c.hours, endsAt: c.endsAt } : null;
+    const fh = demoOfferState.firstHour;
+    const one = pricing().packagePrices[1];
+    const prices: PriceOffers['prices'] = {};
+    for (let h = 1; h <= 12; h++) prices[String(h)] = quoteOf(h, pricing().packagePrices, { firstHourPrice: fh.on ? fh.price : null, isNew, campaign });
+    return wait<PriceOffers>({ firstHour: fh.on && isNew && fh.price < one ? { price: fh.price, saving: one - fh.price } : null, campaign, prices });
+  },
   createPrepaidBooking: (b) => {
     const existing = keys.get(b.idempotencyKey);
     if (existing) {
@@ -249,7 +269,10 @@ export const demo: Backend = {
       status: 'pending',
       paymentStatus: 'pending',
       pricePerHour: 399,
-      packagePrice: priceFor(Number(b.duration) / 60) ?? undefined,
+      packagePrice: demoQuote(Number(b.duration) / 60)?.price ?? priceFor(Number(b.duration) / 60) ?? undefined,
+      listPrice: demoQuote(Number(b.duration) / 60)?.kind ? demoQuote(Number(b.duration) / 60)?.normal : null,
+      offerKind: demoQuote(Number(b.duration) / 60)?.kind ?? null,
+      offerLabel: demoQuote(Number(b.duration) / 60)?.label ?? null,
       startTime: b.startTime,
       duration: b.duration,
       scheduledDate: `${b.scheduledDate}T00:00:00.000Z`,

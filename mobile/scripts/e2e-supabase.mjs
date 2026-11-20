@@ -51,6 +51,16 @@ ok(['terms', 'privacy', 'age_18', 'house_rules'].every((k) => r0.data?.some((x) 
 ok(Array.isArray((await rpc(sup, 'admin_user_consents', { uid: memId })).data), 'staff can see a user’s agreements');
 ok((await rpc(mem, 'admin_user_consents', { uid: memId })).error === 'Access denied', 'members cannot read the consent log');
 
+console.log('1c. Offers: first-hour offer (₹99, rest normal) and admin campaigns');
+r0 = await rpc(anon, 'price_offers');
+ok(r0.data?.prices?.['2']?.normal === 699 && (r0.data?.firstHour == null || (r0.data.firstHour.price === 99 && r0.data.prices['2'].price === 399)), 'visitors: 2 hours ₹699, or ₹399 with the first-hour offer', r0.data?.prices?.['2']);
+r0 = await rpc(sup, 'admin_save_campaign', { p: { label: 'E2E sale', headline: '10% off for testing', kind: 'percent', value: 10, audience: 'everyone', hours: [1, 2], endsAt: new Date(Date.now() + 3600e3).toISOString() } });
+const campId = r0.data?.id; ok(!!campId, 'superadmin starts a campaign', r0);
+ok(/Another campaign/.test((await rpc(sup, 'admin_save_campaign', { p: { label: 'Clash', headline: 'Second campaign', kind: 'percent', value: 5, hours: [1], endsAt: new Date(Date.now() + 1800e3).toISOString() } })).error ?? ''), 'only one campaign at a time');
+r0 = await rpc(mem2, 'price_offers'); ok(r0.data?.campaign?.label === 'E2E sale', 'members see the running campaign on Home', r0.data?.campaign);
+ok(!!(await rpc(mem2, 'admin_end_campaign', { cid: campId })).error, 'members cannot end a campaign');
+r0 = await rpc(sup, 'admin_end_campaign', { cid: campId }); ok(/ended/.test(r0.data?.message ?? ''), 'superadmin ends it; prices back to normal', r0);
+
 console.log('2. Profiles');
 let r = await rpc(mem, 'update_my_profile', { p: { fullName: 'Riya Test', gender: 'woman', seeGender: 'everyone', profileVisibility: 'open', visibilityConsent: true, city: 'Hyderabad', area: 'Gachibowli' } });
 ok(r.data?.fullName === 'Riya Test', 'member saves profile', r);
@@ -80,7 +90,8 @@ r = await rpc(mem, 'list_companions'); ok(r.data?.some((c) => c.id === compId), 
 console.log('4. First booking asks for the ID; staff reject → re-offered/refunded');
 const key = `e2e-${Date.now()}`;
 const book = async (k, date, start, dur) => (await rpc(mem, 'create_prepaid_booking', { p: { companionId: compId, scheduledDate: date, startTime: start, duration: dur, idempotencyKey: k, acceptTerms: true } }));
-r = await book(key + 'a', day(2), '12:00', '120'); const bidA = r.data?.booking?._id; ok(r.data?.quote?.amount === 699, 'booked a new companion: ₹699', r);
+r = await book(key + 'a', day(2), '12:00', '120'); const bidA = r.data?.booking?._id; const paidA = r.data?.quote?.amount;
+ok(paidA === 699 || (r.data?.quote?.offer === 'first_hour' && paidA === 399 && r.data?.quote?.firstHour === 99), 'booked a new companion: ₹699 (or ₹99 + ₹300 on a first booking)', r.data?.quote);
 r = await rpc(mem, 'simulate_payment', { bid: bidA, outcome: 'success' }); ok(r.data?.booking?.allocation?.state === 'offering', 'paid → offered to them', r);
 r = await rpc(comp, 'accept_offer', { bid: bidA }); ok(/Verify your ID/.test(r.error ?? ''), 'accept without an ID is refused', r);
 const f = await up(comp, 'verification', 'id-front'); const bk = await up(comp, 'verification', 'id-back'); const sf = await up(comp, 'verification', 'selfie');
@@ -97,7 +108,7 @@ let cand = r.data?.find((u) => u.id === compId);
 ok(cand?.idFrontPath === f.p && cand.idType === 'aadhaar' && cand.heldBookings === 1 && cand.heldUntil, 'queue shows the held booking and its deadline', cand);
 { const { data } = await sup.storage.from('verification').createSignedUrls([f.p, bk.p, sf.p], 600); ok(data?.every((d) => d.signedUrl), 'staff can open ID documents'); }
 r = await rpc(sup, 'admin_decide_verification', { uid: compId, decision: 'rejected', note: 'Photo is blurry' }); ok(/offered to others/.test(r.data?.message ?? ''), 'rejected: held booking re-offered', r);
-r = await rpc(mem, 'get_booking', { bid: bidA }); ok(r.data?.allocation?.state === 'failed' && r.data?.refund?.amount === 699, 'nobody else free → member refunded in full', r.data && { a: r.data.allocation, rf: r.data.refund });
+r = await rpc(mem, 'get_booking', { bid: bidA }); ok(r.data?.allocation?.state === 'failed' && r.data?.refund?.amount === paidA, 'nobody else free → member refunded in full (what they paid)', r.data && { a: r.data.allocation, rf: r.data.refund });
 r = await rpc(mem, 'list_companions'); ok(!r.data?.some((c) => c.id === compId), 'rejected companion hidden');
 
 console.log('5. New ID → accept → staff approve → confirmed');
@@ -108,7 +119,7 @@ r = await book(key + 'x', day(3), '16:00', '480'); ok(/doesn’t offer 8-hour/.t
 ok((await rpc(mem, 'payment_mode')).data === 'simulated', 'payment mode simulated');
 r = await rpc(mem, 'simulate_payment', { bid, outcome: 'success' }); ok(r.data?.booking?.allocation?.state === 'offering', 'paid → offering', r);
 r = await rpc(comp, 'incoming_bookings'); const offer = r.data?.find((x) => x._id === bid);
-ok(offer?.myOffer?.status === 'offered' && offer.companionShare === 559, 'companion sees offer, earns ₹559', offer);
+ok(offer?.myOffer?.status === 'offered' && offer.companionShare === 559, 'companion sees offer, earns ₹559 (the usual share, even when the member paid an offer price)', offer);
 r = await rpc(mem2, 'get_booking', { bid }); ok(!!r.error, 'other members cannot see the booking');
 r = await rpc(mem2, 'create_prepaid_booking', { p: { companionId: compId, scheduledDate: day(3), startTime: '17:00', duration: '60', idempotencyKey: key + 'dbl', acceptTerms: true, meetingPlace: 'Inorbit Mall' } });
 ok(/already booked at that time/.test(r.error ?? ''), 'no double booking: overlapping time refused for everyone', r);

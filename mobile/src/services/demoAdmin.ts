@@ -1,11 +1,19 @@
 import type { AdminBooking, AdminUser, AuditEntry, BroadcastRecord, CityPlan, PanicAlert, Role } from '@/domain/types';
 import { applyPricing, pricing, priceCurveError } from '@/domain/pricing';
+import { campaignError, type AdminCampaign } from '@/domain/offers';
 import { toDateKey } from '@/domain/booking';
 import { CATEGORIES } from '@/domain/categories';
 import { useSession } from '@/state/session';
 import type { Backend } from './backend';
 
 const CATEGORY_KEYS = CATEGORIES.map((c) => c.key);
+
+/** Sample-mode offers: the first-hour offer and campaigns (same rules as the server). */
+export const demoOfferState: { firstHour: { on: boolean; price: number }; campaigns: AdminCampaign[] } = { firstHour: { on: true, price: 99 }, campaigns: [] };
+export const demoActiveCampaign = (now = new Date()) =>
+  demoOfferState.campaigns.find((c) => !c.endedAt && new Date(c.startsAt) <= now && new Date(c.endsAt) > now) ?? null;
+const campaignStatus = (c: AdminCampaign): AdminCampaign['status'] =>
+  c.endedAt || new Date(c.endsAt) <= new Date() ? 'ended' : new Date(c.startsAt) > new Date() ? 'scheduled' : 'running';
 
 /**
  * Sample admin data for EXPO_PUBLIC_DEMO=1. Same rules as the server where it
@@ -260,6 +268,38 @@ export const demoAdmin: Backend['admin'] = {
     if (!b?.dispute) return fail('Dispute not found.');
     log('dispute.close', { kind: 'booking', id }, { resolution });
     return wait({ message: 'Dispute closed.', booking: putB(id, { dispute: { ...b.dispute, status: 'resolved', resolution, resolvedAt: new Date().toISOString() } }) });
+  },
+  campaigns: () =>
+    wait({
+      firstHour: { ...demoOfferState.firstHour, bookings: 0, discount: 0 },
+      campaigns: demoOfferState.campaigns.map((c) => ({ ...c, status: campaignStatus(c) })),
+    }),
+  saveCampaign: (p) => {
+    if (!isSuper()) return fail('Access denied');
+    const err = campaignError({ ...p, value: String(p.value) }, pricing().packagePrices[1]);
+    if (err) return fail(err);
+    const start = p.startsAt ?? new Date().toISOString();
+    const clash = demoOfferState.campaigns.some((c) => c.id !== p.id && campaignStatus(c) !== 'ended' && new Date(c.startsAt) < new Date(p.endsAt) && new Date(start) < new Date(c.endsAt));
+    if (clash) return fail('Another campaign runs at that time. End it first, or pick other dates.');
+    const id = p.id ?? `c${Date.now()}`;
+    const next: AdminCampaign = { id, label: p.label.trim(), headline: p.headline.trim(), kind: p.kind, value: p.value, audience: p.audience, hours: p.hours, startsAt: start, endsAt: p.endsAt, endedAt: null, status: 'running', bookings: 0, discount: 0 };
+    demoOfferState.campaigns = [next, ...demoOfferState.campaigns.filter((c) => c.id !== id)];
+    log('campaign.save', { kind: 'campaign', id }, { label: next.label });
+    return wait({ message: new Date(start) <= new Date() ? 'Campaign is live. It shows on Home now.' : 'Campaign scheduled.', id });
+  },
+  endCampaign: (id) => {
+    if (!isSuper()) return fail('Access denied');
+    const c = demoOfferState.campaigns.find((x) => x.id === id && !x.endedAt);
+    if (!c) return fail('Campaign not found or already ended.');
+    c.endedAt = new Date().toISOString();
+    log('campaign.end', { kind: 'campaign', id }, {});
+    return wait({ message: 'Campaign ended. Bookings already made keep their price.' });
+  },
+  setFirstHourOffer: (on, price) => {
+    if (!isSuper()) return fail('Access denied');
+    if (price < 1 || price >= pricing().packagePrices[1]) return fail(`The first-hour price must be between ₹1 and ₹${pricing().packagePrices[1] - 1}.`);
+    demoOfferState.firstHour = { on, price };
+    return wait({ message: on ? `First-hour offer is on at ₹${price}.` : 'First-hour offer is off.' });
   },
   savePricing: ({ repriceUnpaid, ...p }) => {
     if (!isSuper()) return fail('Access denied');

@@ -47,9 +47,11 @@ export const qk = {
   profile: ['profile'] as const,
   profileCheck: ['profile', 'check'] as const,
   pricing: ['settings', 'pricing'] as const,
+  offers: ['offers'] as const,
   admin: {
     all: ['admin'] as const,
     overview: ['admin', 'overview'] as const,
+    campaigns: ['admin', 'campaigns'] as const,
     reports: (status: string) => ['admin', 'reports', status] as const,
     verifications: ['admin', 'verifications'] as const,
     users: (q: string, role: string) => ['admin', 'users', q, role] as const,

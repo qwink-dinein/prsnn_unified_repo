@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { colors, radius, space } from '@/theme/tokens';
-import { Header, Loading, ErrorState, Screen, Card, Chip } from '@/components/ui/layout';
+import { Header, Loading, ErrorState, Screen, Card, Chip, Segmented } from '@/components/ui/layout';
+import { router } from 'expo-router';
 import { Text } from '@/components/ui/Text';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
@@ -120,6 +121,7 @@ function Prices() {
     >
       <Header title="Prices" />
       <View style={{ paddingHorizontal: 20, gap: space.lg }}>
+        <Segmented options={[{ value: 'prices', label: 'Prices' }, { value: 'campaigns', label: 'Campaigns' }]} value="prices" onChange={(v) => v === 'campaigns' && router.replace('/admin/campaigns')} />
         <Text variant="footnote" muted>
           One price list for every companion. Each longer package must cost more in total and less per hour.
         </Text>

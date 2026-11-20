@@ -124,12 +124,17 @@ export function RequestCard({ b }: { b: Booking }) {
           <Pill label={pill.label} tone={pill.tone} />
         </View>
         <View style={{ alignItems: 'flex-end' }}>
-          <Text variant="subhead">{formatINR(b.companionShare ?? companionShareOf(totalOf(b)))}</Text>
+          <Text variant="subhead">{formatINR(b.companionShare ?? companionShareOf(b.listPrice ?? totalOf(b)))}</Text>
           <Text variant="caption" muted>
             you earn
           </Text>
         </View>
       </View>
+      {b.offerKind ? (
+        <Text variant="footnote" color={colors.champagneDeep} style={{ fontFamily: 'Urbanist-SemiBold' }}>
+          Offer booking ({b.offerKind === 'first_hour' ? 'first-hour offer' : b.offerLabel ?? 'campaign'}). You still earn your usual share; prsnn pays the member’s discount.
+        </Text>
+      ) : null}
       <MetaLine icon="calendar" text={whenOf(b)} />
       <MetaLine icon="clock" text={durationLabel(b.duration)} />
       {b.message ? <MetaLine icon="message" text={`“${b.message}”`} /> : null}

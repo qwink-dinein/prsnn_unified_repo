@@ -583,3 +583,36 @@ Migration `20261118180000_companion_meets` (applied). Test: `backend/supabase/te
 - Test prices (owner, 18 Nov): ₹10 / 19 / 28 / 37 … 109 for 1–12 h (₹10 + ₹9 per extra hour). While these are on,
   the e2e price checks (₹399 / ₹699) fail on purpose; restore 399 … 3599 in Admin → Prices before launch.
   Restored to 399 … 3599 the same day, after testing.
+
+## Round 26 (2026-11-19): Fix screen asks for city and area; keep the old photo until a new one is approved
+
+Migration `20261119100000_keep_photo_until_approved` (**not applied yet**: waiting for the owner's Supabase approval).
+Test: `backend/supabase/tests/round15-keep-photo-until-approved.sql` (rolled back).
+
+- `profiles.approved_photo_path`: the last photo staff approved. `private.public_photo` shows the current photo once
+  approved, otherwise the last approved one. Trigger `profiles_zz_keep_approved_photo` keeps it in step: approval sets
+  it; staff flagging the live photo clears it; removing the photo clears it.
+- App: the Fix screen reads `reasons` from the notification and shows state/city/area when "Wrong area or city" was
+  ticked (`fixNeeds` in `src/domain/verification.ts`). Notifications stay in-app only.
+
+## Round 27 (2026-11-20): first-hour offer and admin campaigns
+
+Migration `20261120100000_first_hour_offer_and_campaigns` (**not applied yet**). Test:
+`backend/supabase/tests/round16-first-hour-offer-campaigns.sql` (rolled back). e2e: step 1c, and steps 4–5 accept the offer price.
+
+- **First-hour offer** (`settings.pricing.firstHourOffer = {on, price}`, default on at ₹99): a member with no paid
+  booking (a refund because no companion was free doesn't count, `private.is_first_timer`) pays the package price minus
+  (1-hour price − offer price): first hour ₹99, the rest at the normal price (1 h ₹99, 2 h ₹399, 4 h ₹999, 12 h ₹3,299).
+- **Campaigns** (`public.campaigns`): label, headline, `percent` (1–90) or `per_hour` (never more than the package),
+  `everyone` or `new` members, lengths, start/end. One at a time (overlaps refused).
+- `private.quote(uid, hours)`: the member pays the lowest of normal / first-hour / campaign, never both.
+  `public.price_offers()` (anon + authenticated) returns `{ firstHour, campaign, prices: {"1"…"12": quote} }` for Home,
+  the companion page and checkout.
+- Bookings store `package_price` (what the member pays, locked at booking), `list_price` (normal), `offer_kind`,
+  `offer_label`, `campaign_id`. Companions' share is taken from `coalesce(list_price, amount_paid)` in `accept_offer`,
+  `admin_reassign_booking`, `incoming_bookings` and `next_offer`: prsnn pays the discount. Re-pricing unpaid bookings
+  skips offer bookings. A new first-hour booking cancels the member's other unpaid first-hour bookings.
+- Admin (superadmin): `admin_campaigns()`, `admin_save_campaign(p)`, `admin_end_campaign(cid)`,
+  `admin_set_first_hour_offer(is_on, price)`. App: Admin → Prices | Campaigns, `admin/campaign` form with a Home preview.
+- App: `src/domain/offers.ts` (same rule as the server, bill lines, form checks), `components/OfferBanners.tsx`
+  (Home cards, `useOffers`), offer prices on `PackageGrid`, the companion footer and checkout.

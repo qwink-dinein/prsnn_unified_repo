@@ -100,6 +100,7 @@ export default function AdminOverview() {
           <ListRow icon="users" label="Users" value="Search, edit, suspend" onPress={() => router.push('/admin/users')} last={!can(role, 'editPrices')} />
           {can(role, 'manageAdmins') ? <ListRow icon="shield" label="Sub-admins" onPress={() => router.push('/admin/admins')} /> : null}
           {can(role, 'editPrices') ? <ListRow icon="rupee" label="Prices" value="Packages, split, cancellation" onPress={() => router.push('/admin/prices')} /> : null}
+          {can(role, 'editPrices') ? <ListRow icon="sparkle" label="Campaigns and offers" value="First-hour offer, Home banner" onPress={() => router.push('/admin/campaigns')} /> : null}
           {can(role, 'broadcast') ? <ListRow icon="send" label="Broadcast" value="Push to members or companions" onPress={() => router.push('/admin/broadcast')} /> : null}
           {can(role, 'viewActivity') ? <ListRow icon="doc" label="Activity log" onPress={() => router.push('/admin/activity')} last /> : null}
         </View>

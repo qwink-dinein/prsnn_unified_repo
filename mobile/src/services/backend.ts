@@ -8,6 +8,7 @@ import { sameLogin } from '@/domain/login';
 import { LEGAL_VERSION, type Consent, type ConsentKind } from '@/domain/rules';
 import type { AdminBooking, AdminChatMessage, AdminOverview, AdminUser, AppNotification, AuditEntry, Booking, BroadcastAudience, BroadcastRecord, CityPlan, Companion, Duration, Locality, PanicAlert, Policy, Profile, ProfileCheck, Quote, Recipient, SessionUser, BookingStatus, IdType, Gender, SeeGender, Visibility, ApprovalStatus } from '@/domain/types';
 import type { PricingSettings } from '@/domain/pricing';
+import type { AdminCampaigns, PriceOffers } from '@/domain/offers';
 import type { BookingTab } from '@/domain/admin';
 import type { AdminReport, BlockedPerson, ReportReason } from '@/domain/safety';
 
@@ -455,8 +456,16 @@ export const backend = {
     return data.value as PricingSettings;
   },
 
+  /** Today's prices for this person: first-hour offer (new members), a running campaign, and every length's price. */
+  priceOffers: () => rpc<PriceOffers>('price_offers'),
+
   // ── In-app admin (staff only; money/price/push are superadmin-only on the server) ──
   admin: {
+    campaigns: () => rpc<AdminCampaigns>('admin_campaigns'),
+    saveCampaign: (p: { id?: string; label: string; headline: string; kind: 'percent' | 'per_hour'; value: number; audience: 'everyone' | 'new'; hours: number[]; startsAt?: string; endsAt: string }) =>
+      rpc<{ message: string; id: string }>('admin_save_campaign', { p }),
+    endCampaign: (id: string) => rpc<{ message: string }>('admin_end_campaign', { cid: id }),
+    setFirstHourOffer: (on: boolean, price: number) => rpc<{ message: string }>('admin_set_first_hour_offer', { is_on: on, price }),
     overview: () => rpc<AdminOverview>('admin_overview'),
     reports: (status: 'open' | 'closed' | '' = 'open') => rpc<AdminReport[]>('admin_reports', { st: status }),
     closeReport: (id: string, note: string) => rpc<{ message: string }>('admin_close_report', { rid: id, resolution: note }),

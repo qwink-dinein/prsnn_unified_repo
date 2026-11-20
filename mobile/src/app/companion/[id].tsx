@@ -13,6 +13,8 @@ import { LockedPhoto } from '@/components/LockedPhoto';
 import { Icon, type IconName } from '@/components/ui/Icon';
 import { Button } from '@/components/ui/Button';
 import { HeartButton, firstName, fromPrice, placeOf } from '@/components/companions';
+import { useOffers } from '@/components/OfferBanners';
+import { hasOffer, quoteFor } from '@/domain/offers';
 import { hoursLabel, offeredHours, priceFor } from '@/domain/pricing';
 import { availableDayNames, CATEGORIES, DEFAULT_END, DEFAULT_START, formatINR, formatTime, matchesCategory, toDateKey } from '@/domain/booking';
 import { BookingPicker, type BookingChoice } from '@/components/BookingPicker';
@@ -185,7 +187,7 @@ export default function CompanionProfile() {
         <View style={{ flex: 1, minWidth: 0 }}>
           {choice.hours ? (
             <>
-              <Text variant="title3">{formatINR(priceFor(choice.hours) ?? 0)}</Text>
+              <FooterPrice hours={choice.hours} />
               <Text variant="caption" muted numberOfLines={1}>
                 {hoursLabel(choice.hours)}
                 {ready ? ` · ${choice.date!.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}, ${formatTime(choice.time!)}` : ' · longer costs less per hour'}
@@ -233,3 +235,18 @@ const styles = StyleSheet.create({
   infoCard: { backgroundColor: colors.paper, borderRadius: radius.lg, padding: space.lg, gap: space.sm, borderWidth: 1, borderColor: colors.line },
   footer: { position: 'absolute', left: 0, right: 0, bottom: 0, flexDirection: 'row', alignItems: 'center', gap: space.lg, paddingHorizontal: GUTTER, paddingTop: space.md, backgroundColor: colors.paper, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.line },
 });
+
+/** The chosen length's price; with an offer, the normal price is crossed out beside it. */
+function FooterPrice({ hours }: { hours: number }) {
+  const q = quoteFor(useOffers().data, hours);
+  if (!hasOffer(q)) return <Text variant="title3">{formatINR(priceFor(hours) ?? 0)}</Text>;
+  return (
+    <Text variant="title3" accessibilityLabel={`${formatINR(q.price)}, normally ${formatINR(q.normal)}`}>
+      <Text variant="callout" muted style={{ textDecorationLine: 'line-through' }}>
+        {formatINR(q.normal)}
+      </Text>
+      {'  '}
+      {formatINR(q.price)}
+    </Text>
+  );
+}

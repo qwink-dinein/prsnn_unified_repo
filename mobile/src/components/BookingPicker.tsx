@@ -5,8 +5,10 @@ import { colors, radius, space } from '@/theme/tokens';
 import { IconButton } from '@/components/ui/layout';
 import { Text } from '@/components/ui/Text';
 import { PackageGrid } from '@/components/PackageGrid';
+import { useOffers } from '@/components/OfferBanners';
+import { Notice } from '@/components/ui/states';
 import { firstName } from '@/components/companions';
-import { MIN_LEAD_MINUTES, endTimeOf, formatTime, freeSlots, isDayAvailable, monthGrid, timeSlots, toDateKey } from '@/domain/booking';
+import { MIN_LEAD_MINUTES, endTimeOf, formatINR as inr, formatTime, freeSlots, isDayAvailable, monthGrid, timeSlots, toDateKey } from '@/domain/booking';
 import { POPULAR_HOURS, hoursLabel, offeredHours } from '@/domain/pricing';
 import type { Companion } from '@/domain/types';
 import { svc } from '@/services';
@@ -59,6 +61,7 @@ export function BookingPicker({ c, onChange, initialHours }: { c: Companion; onC
 
   return (
     <View>
+      <OfferLine />
       <Text variant="headline" style={styles.step}>
         How long?
       </Text>
@@ -178,3 +181,11 @@ const styles = StyleSheet.create({
   slot: { minWidth: '30%', flexGrow: 1, minHeight: 44, alignItems: 'center', justifyContent: 'center', borderRadius: radius.md, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.line },
   slotOn: { backgroundColor: colors.moss, borderColor: colors.moss },
 });
+
+/** "Your first hour is ₹99. Extra hours at the normal price." or the running campaign, above the lengths. */
+function OfferLine() {
+  const o = useOffers().data;
+  if (o?.firstHour) return <Notice tone="success" text={`Your first hour is ${inr(o.firstHour.price)}. Extra hours are at the normal price.`} />;
+  if (o?.campaign) return <Notice tone="success" text={`${o.campaign.label}: ${o.campaign.headline}. The price is locked when you book.`} />;
+  return null;
+}

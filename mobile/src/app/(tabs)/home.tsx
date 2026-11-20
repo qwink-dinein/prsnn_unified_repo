@@ -13,6 +13,7 @@ import { HomeCategories } from '@/components/HomeCategories';
 import { RulesCard } from '@/components/RulesCard';
 import { CommunityBanner } from '@/components/CommunityBanner';
 import { BecomeCompanionCard } from '@/components/BecomeCompanionCard';
+import { CampaignBanner, FirstHourCard } from '@/components/OfferBanners';
 import { formatINR } from '@/domain/booking';
 import { priceFor } from '@/domain/pricing';
 import { Text } from '@/components/ui/Text';
@@ -95,6 +96,10 @@ function Discover() {
           />
         </View>
       ) : null}
+
+      {/* Offers (Booking mode): a running admin campaign, and the first-hour offer until their first booking. The server decides who sees what. */}
+      <CampaignBanner style={{ marginHorizontal: GUTTER, marginTop: space.md }} />
+      <FirstHourCard style={{ marginHorizontal: GUTTER, marginTop: space.md }} />
 
       <Enter index={1} style={{ marginTop: space.md }}>
         <HomeCategories />
