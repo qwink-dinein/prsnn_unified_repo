@@ -141,3 +141,18 @@ What limits you is the **Supabase plan**, not the code:
 
 Also: Razorpay → **Settings → Payment capture → Automatic** (so no payment is left authorised); WhatsApp (Waplify)
 message credits sized for login codes; the Razorpay webhook secret matching in both places.
+
+## Part F · Versions and force update (every release)
+
+- **Version** (`"version"` in `mobile/app.json`, e.g. 1.0.1): the number people see. Raise it by hand for each release
+  (1.0.1 → 1.0.2). The force update compares this number.
+- **Build number** (Android versionCode / iPhone build): set by EAS (`appVersionSource: remote`, `autoIncrement`), goes
+  up by 1 on every production build. The stores refuse an upload whose build number isn't higher than the last one.
+- **iPhone:** once a new version is live on the App Store, older iPhones are stopped automatically (Apple lookup).
+- **Android:** after the new version is 100% live (Play) or uploaded (website APK), open Admin → App updates → Android →
+  enter the version. Update link: the APK link while you share the APK; empty once everyone is on Google Play.
+- Builds before 1.0.1 (no force-update code) can never be forced: ask those people to install the new app.
+- APK → Google Play: the website APK is signed with the EAS key; Play re-signs its copy with Google's key, so Android
+  won't install the Play version over the APK. When Play goes live: put the Play link on the website, then set the
+  Android update message to "Uninstall prsnn, then install it from Google Play" (account and bookings stay; they log
+  in again).
